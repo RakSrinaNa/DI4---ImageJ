@@ -1,0 +1,40 @@
+\documentclass{report}
+\usepackage{MCC}
+
+\def\footauthor{Thomas COUCHOUD \& Victor COLEAU}
+\title{Rapport TP1}
+\author{Thomas COUCHOUD\\\texttt{thomas.couchoud@etu.univ-tours.fr}\\Victor COLEAU\\\texttt{victor.coleau@etu.univ-tours.fr}}
+
+\begin{document}
+	\mccTitle[no]
+	\tableofcontents
+
+	\chapter{Questions}
+		\section{Question 1}
+			\begin{easylist}[itemize]
+				& \cbo{Image} permet de gérer les caractéristiques propres à l'image en cour (type d'encodage, luminosité, contraste, ...).
+				& \cbo{Process} permet d'appliquer des opérations sur l'image telles qu'ajouter du bruit, des ombres, ...
+				& \cbo{Analyze} permet d'acquérir des informations sur l'image dans son état actuel (surface, min/max de couleurs, histogramme, ...).
+				& \cbo{Plugins} permet d'utiliser des plugins. Certains sont déjà fournis de base.
+			\end{easylist}
+			
+			Afin de convertir une image en niveau de gris nous utilisons le menu \cbo{Image > Type} puis avons le choix entre:
+			
+			\begin{easylist}[itemize]
+				& 8 bit: Il y aura 256 niveaux de gris.
+				& 16 bit: Il y aura 65536 niveaux de gris.
+				& 32 bit: Il y aura 4294967296 niveaux de gris.
+			\end{easylist}
+			
+			Ces valeurs on un impact sur la manière dont est stocké l'image. Plus on utilise de bits, plus la taille en mémoire de l'image est importante.
+			
+		\section{Question 2}
+			\subsection{Zone 1}
+				Nous pouvons observer dans la zone 1 un pic très important. Celui-ci s'explique par une forte présence de couleurs sombres dans l'image originelle transformées en gris sombre (a.k.a. noir). Ces pixels noirs ont une valeur comprise entre $3$ et $28$.
+				
+			\subsection{Zone 2}
+				\`A l'inverse, l'image originelle contient très peu de pixels clairs. Cela est traduit par très peu ($\approx 250$) de pixels clairs (a.k.a. blancs).
+				
+		\section{Question 3}
+			
+\end{document}
