@@ -2,23 +2,23 @@
 \usepackage{MCC}
 
 \def\footauthor{Thomas COUCHOUD \& Victor COLEAU}
-\title{Rapport TP1}
+\title{Analyse d'images}
 \author{Thomas COUCHOUD\\\texttt{thomas.couchoud@etu.univ-tours.fr}\\Victor COLEAU\\\texttt{victor.coleau@etu.univ-tours.fr}}
 
 \begin{document}
 	\mccTitle[no]
 	\tableofcontents
 
-	\chapter{Questions}
+	\chapter{TP1}
 		\section{Question 1}
 			\begin{easylist}[itemize]
-				& \cbo{Image} permet de gérer les caractéristiques propres à l'image en cour (type d'encodage, luminosité, contraste, ...).
+				& \cbo{Image} permet de gérer les caractéristiques propres à l'image en cours (type d'encodage, luminosité, contraste, ...).
 				& \cbo{Process} permet d'appliquer des opérations sur l'image telles qu'ajouter du bruit, des ombres, ...
 				& \cbo{Analyze} permet d'acquérir des informations sur l'image dans son état actuel (surface, min/max de couleurs, histogramme, ...).
 				& \cbo{Plugins} permet d'utiliser des plugins. Certains sont déjà fournis de base.
 			\end{easylist}
 			
-			Afin de convertir une image en niveau de gris nous utilisons le menu \cbo{Image > Type} puis avons le choix entre:
+			Afin de convertir une image en niveaux de gris nous utilisons le menu \cbo{Image > Type} puis avons le choix entre:
 			
 			\begin{easylist}[itemize]
 				& 8 bit: Il y aura 256 niveaux de gris.
@@ -26,7 +26,7 @@
 				& 32 bit: Il y aura 4294967296 niveaux de gris.
 			\end{easylist}
 			
-			Ces valeurs on un impact sur la manière dont est stocké l'image. Plus on utilise de bits, plus la taille en mémoire de l'image est importante.
+			Ces valeurs ont un impact sur la manière dont est stockée l'image. Plus on utilise de bits, plus la taille en mémoire de l'image est importante.
 			
 			\begin{important}
 				Dans la suite de ce TP, nous utiliserons le niveau de gris 8-bit.
@@ -37,7 +37,7 @@
 				Nous pouvons observer dans la zone 1 un pic très important. Celui-ci s'explique par une forte présence de couleurs sombres dans l'image originelle transformées en gris sombre (a.k.a. noir). Ces pixels noirs ont une valeur comprise entre $3$ et $28$.
 				
 			\subsection{Zone 2}
-				\`A l'inverse, l'image originelle contient très peu de pixels clairs. Cela est traduit par très peu ($\approx 250$) de pixels clairs (a.k.a. blancs).
+				\`A l'inverse, l'image originelle contient très peu de pixels clairs. Cela est traduit par très peu ($\approx 250$) de gris pixels clairs (a.k.a. blancs).
 				
 		\section{Question 3}
 			\subsection{mystere.pgm}
@@ -91,7 +91,7 @@
 				\end{figure}
 				
 		\section{Question 4}
-			L'image \cbo{soleil} est celle ayant le plus changé car est est à l'origine extrêmement sombre (très peu de contraste, c'est a dire très peu de niveaux de gris utilisés). L'égalisation du contraste fait beaucoup varier la couleur des pixels qui étaient à l'origine très proches.
+			L'image \cbo{soleil} est celle ayant le plus changé car elle est à l'origine extrêmement sombre (très peu de contraste, c'est à dire très peu de niveaux de gris utilisés). L'égalisation du contraste fait donc beaucoup varier la couleur des pixels qui étaient à l'origine très proches.
 			
 		\section{Question 5}
 			Les trois filtres rendent l'image floue. A cette étape, la taille du filtre n'influence que le niveau de flou (très ou peu flou). Cela permet de lisser l'image ainsi que de réduire son bruit.
@@ -141,4 +141,11 @@
 			
 		\section{Question 10}
 			Le point faible est que toute l'image devient floue alors que seules les parties bruitées "devraient" être affectées. De plus ce flou implique une perte de détails et de contraste.
+			
+	\chapter{TP2}
+		\section{Question 1}
+			\subsection{Détection des contours}
+				Nous avons choisit les images \cbo{zebre.jpg} et \cbo{cellules.png}. Le filtre en question applique des traits blancs sur les zones de contour. Sur les images choisies, nous remarquons que les rayures du zèbre et la membrane des cellules sont en blanc car ce sont de fortes zones de contour. A l'inverse l'intérieur/extérieur des cellules est entièrement noir car ce ne sont pas des zones de contour.
+				
+			\subsection{Deriche}
 \end{document}
