@@ -1,0 +1,6 @@
+Color : yellow, green, red, blue, brown, gray, white, black, orange 
+Scene = Indoor – outdoor – countryside – city 
+Content inside = human – face – animal – car – plane – van – byke 
+Content outside = sky – sun – house – tree – water - sea 
+Quality = Fuzzy, sharp, dark, light 
+Complexity = solated, multiple
