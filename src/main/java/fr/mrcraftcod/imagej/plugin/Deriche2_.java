@@ -1,3 +1,5 @@
+package fr.mrcraftcod.imagej.plugin;
+
 import ij.*;
 import ij.gui.*;
 import ij.plugin.filter.PlugInFilter;

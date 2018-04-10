@@ -1,4 +1,4 @@
-package tp2;
+package fr.mrcraftcod.imagej.plugin;
 import ij.*;
 import ij.process.*;
 import ij.gui.*;
