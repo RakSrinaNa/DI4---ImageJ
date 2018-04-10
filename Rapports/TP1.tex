@@ -28,6 +28,10 @@
 			
 			Ces valeurs on un impact sur la manière dont est stocké l'image. Plus on utilise de bits, plus la taille en mémoire de l'image est importante.
 			
+			\begin{important}
+				Dans la suite de ce TP, nous utiliserons le niveau de gris 8-bit.
+			\end{important}
+			
 		\section{Question 2}
 			\subsection{Zone 1}
 				Nous pouvons observer dans la zone 1 un pic très important. Celui-ci s'explique par une forte présence de couleurs sombres dans l'image originelle transformées en gris sombre (a.k.a. noir). Ces pixels noirs ont une valeur comprise entre $3$ et $28$.
@@ -36,5 +40,105 @@
 				\`A l'inverse, l'image originelle contient très peu de pixels clairs. Cela est traduit par très peu ($\approx 250$) de pixels clairs (a.k.a. blancs).
 				
 		\section{Question 3}
+			\subsection{mystere.pgm}
+				\begin{figure}[H]
+					\begin{framed}
+						\begin{minipage}{0.49\textwidth}
+							\img{TP1/mystereHistoAv.PNG}{Histogramme avant}{0.8}
+						\end{minipage}
+						\begin{minipage}{0.49\textwidth}
+							\img{TP1/mystereHistoAp.PNG}{Histogramme après}{0.8}
+						\end{minipage}
+						\caption{Histogrammes}
+					\end{framed}
+				\end{figure}
+				
+				\begin{figure}[H]
+					\begin{framed}
+						\begin{minipage}{0.49\textwidth}
+							\img{TP1/mystereAv.PNG}{Image avant}{0.9}
+						\end{minipage}
+						\begin{minipage}{0.49\textwidth}
+							\img{TP1/mystereAp.PNG}{Image après}{0.9}
+						\end{minipage}
+						\caption{Images}
+					\end{framed}
+				\end{figure}
+				
+			\subsection{mer.png⁄}
+				\begin{figure}[H]
+					\begin{framed}
+						\begin{minipage}{0.49\textwidth}
+							\img{TP1/merHistoAv.PNG}{Histogramme avant}{0.8}
+						\end{minipage}
+						\begin{minipage}{0.49\textwidth}
+							\img{TP1/merHistoAp.PNG}{Histogramme après}{0.8}
+						\end{minipage}
+						\caption{Histogrammes}
+					\end{framed}
+				\end{figure}
+				
+				\begin{figure}[H]
+					\begin{framed}
+						\begin{minipage}{0.49\textwidth}
+							\img{TP1/merAv.PNG}{Image avant}{0.25}
+						\end{minipage}
+						\begin{minipage}{0.49\textwidth}
+							\img{TP1/merAp.PNG}{Image après}{0.25}
+						\end{minipage}
+						\caption{Images}
+					\end{framed}
+				\end{figure}
+				
+		\section{Question 4}
+			L'image \cbo{soleil} est celle ayant le plus changé car est est à l'origine extrêmement sombre (très peu de contraste, c'est a dire très peu de niveaux de gris utilisés). L'égalisation du contraste fait beaucoup varier la couleur des pixels qui étaient à l'origine très proches.
 			
+		\section{Question 5}
+			Les trois filtres rendent l'image floue. A cette étape, la taille du filtre n'influence que le niveau de flou (très ou peu flou). Cela permet de lisser l'image ainsi que de réduire son bruit.
+			
+		\section{Question 6}
+			Un filtre moyenneur devrait en toute logique remplir l'image d'une couleur étant la moyenne de toutes les couleurs de l'image. 
+			
+			Cependant après test, nous observons un histogramme qui contient un pic centré à la couleur moyenne (mais d'autres valeurs sont présentes autour de ce pic).
+			
+		\section{Question 7}
+			 \begin{figure}[H]
+					\begin{framed}
+						\begin{minipage}{0.33\textwidth}
+							\img{TP1/lisaConv0.PNG}{Image avant}{0.45}
+						\end{minipage}
+						\begin{minipage}{0.33\textwidth}
+							\img{TP1/lisaConv1.PNG}{Image après 1 convolution}{0.45}
+						\end{minipage}
+						\begin{minipage}{0.33\textwidth}
+							\img{TP1/lisaConv2.PNG}{Image après 2 convolutions}{0.45}
+						\end{minipage}
+						\caption{Images et convolution}
+					\end{framed}
+				\end{figure}
+			 
+			 Ce masque de convolution efface les détails présents dans l'image et réduit le bruit, et par conséquence la rend légèrement floue.
+			 
+		\section{Question 8}
+			\img{TP1/lisaConvTP0.PNG}{Profile sur la droite avant}{0.7}
+			\begin{figure}[H]
+				\begin{framed}
+					\begin{minipage}{0.33\textwidth}
+						\img{TP1/lisaConvT0.PNG}{Image avant}{0.45}
+					\end{minipage}
+					\begin{minipage}{0.33\textwidth}
+						\img{TP1/lisaConvT1.PNG}{Image après 1 convolution}{0.45}
+					\end{minipage}
+					\begin{minipage}{0.33\textwidth}
+						\img{TP1/lisaConvT2.PNG}{Image après 2 convolutions}{0.45}
+					\end{minipage}
+					\caption{Images et convolution}
+				\end{framed}
+			\end{figure}
+			\img{TP1/lisaConvTP2.PNG}{Profile sur la droite après}{1.1}
+			
+			On remarque que le diagramme est moins en dents de scie. Cela montre que le bruit a été atténué. De plus la courbe a des variations moins brutales et moins oscillantes. Cela traduit le lissage.
+			
+		\section{Question 10}
+			Le point faible est que toute l'image devient floue alors que seules les parties bruitées "devraient" être affectées. De plus ce flou implique une perte de détails et de contraste.
 \end{document}
