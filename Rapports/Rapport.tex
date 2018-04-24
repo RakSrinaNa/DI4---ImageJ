@@ -5,6 +5,7 @@
 \title{Analyse d'images}
 \author{Thomas COUCHOUD\\\texttt{thomas.couchoud@etu.univ-tours.fr}\\Victor COLEAU\\\texttt{victor.coleau@etu.univ-tours.fr}}
 
+\rowcolors{1}{white}{white}
 \begin{document}
 	\mccTitle[no]
 	\tableofcontents
@@ -148,4 +149,119 @@
 				Nous avons choisit les images \cbo{zebre.jpg} et \cbo{cellules.png}. Le filtre en question applique des traits blancs sur les zones de contour. Sur les images choisies, nous remarquons que les rayures du zèbre et la membrane des cellules sont en blanc car ce sont de fortes zones de contour. A l'inverse l'intérieur/extérieur des cellules est entièrement noir car ce ne sont pas des zones de contour.
 				
 			\subsection{Deriche}
+				Les étapes de Deriche sont:
+				\begin{easylist}
+					& Applique un filtre pour lisser l'image
+					& Calcule des gradients
+					& Applique une suppression non-maximale pour éviter les fausses détections de contour.
+					& Détecte les bordures avec 2 valeurs bornes.	
+				\end{easylist}
+
+			
+				Ce filtre nous sort deux images résultat:
+				\begin{easylist}[itemize]
+					& La première est parfaitement nette. On y voit toute l'image en noir ainsi que les contours en blanc.
+					& La deuxième est similaire à la première à la différence que l'algorithme anti-bruit la rend floue.	
+				\end{easylist}
+
+				Nous avons testé le filtre Deriche sur les 3 images suivantes:
+				\begin{easylist}[itemize]
+					& aqui.jpg : L'image d'origine est extrêmement sombre bien que l'on discerne tout de même des contours plus clairs. L'algorithme est donc très efficace car même si l'\oe il humain a du mal à distinguer les contours, les zones sont clairement distinctes en termes de couleurs. Voir \autoref{AquiTP2}.
+					& noise.jpg : Cette image est extrêmement bruitée. Bien que reconnaissant les contours de deux formes, l'algorithme considère aussi tous les "points bruit" et affiche donc un ensemble de contours qui ne devrait pas être reconnu. Voir \autoref{NoiseTP2}.
+					& delphin.jpg : Cette image n'est composée que de points, l'algorithme ne peut donc pas y reconnaitre de contours. Les résultats obtenus sont donc quasiment entièrement noirs. Voir \autoref{DelphinTP2}.
+				\end{easylist}
+				
+				\begin{figure}[H]
+					\begin{framed}
+						\begin{minipage}{0.49\textwidth}
+							\img{TP2/aqui1.png}{Aqui avant}{0.8}
+						\end{minipage}
+						\begin{minipage}{0.49\textwidth}
+							\img{TP2/aqui2.png}{Aqui après}{0.8}
+						\end{minipage}
+						\label{AquiTP2}
+						\caption{Aqui}
+					\end{framed}
+				\end{figure}
+				
+				\begin{figure}[H]
+					\begin{framed}
+						\begin{minipage}{0.49\textwidth}
+							\img{TP2/noise1.png}{Noise avant}{0.8}
+						\end{minipage}
+						\begin{minipage}{0.49\textwidth}
+							\img{TP2/noise2.png}{Noise après}{0.8}
+						\end{minipage}
+						\label{NoiseTP2}
+						\caption{Noise}
+					\end{framed}
+				\end{figure}
+				
+				\begin{figure}[H]
+					\begin{framed}
+						\begin{minipage}{0.49\textwidth}
+							\img{TP2/delphin1.png}{Delphin avant}{0.8}
+						\end{minipage}
+						\begin{minipage}{0.49\textwidth}
+							\img{TP2/delphin2.png}{Delphin après}{0.8}
+						\end{minipage}
+						\label{DelphinTP2}
+					\caption{Delphin}
+					\end{framed}
+				\end{figure}
+
+		\section{Question 2}
+			\subsection{jeu1 \& jeu2}
+				Afin de mettre en évidence les différences entre les images, il faut appliquer l'opération XOR sur celles-ci. En effet cette opération permet de ne garder que les pixels étant strictement différents.
+			
+			\subsection{jeu3}
+				Dans le fichier jeu3, on voit qu'une colonne de pixels blancs est présente tout à gauche de l'image, cela fausserai donc les calculs. Afin d'y remédier, nous proposons l'algorithme suivant: on commence par parcourir verticalement l'image. Toute colonne ne contenant que des pixels blancs sera éliminée, l'image sera donc décalée d'un pixel vers la gauche. Une fois que toutes les colonnes blanches ont étés supprimées, nous pouvons appliquer le XOR de l'opération précédente.
+		
+		\section{Question 3}
+			\subsection{Zèbre horizontal}
+				Afin de ne faire apparaitre que les traits horizontaux de l'image zèbre.jpg, nous utilisons le masque de convolution suivant: $\left( \begin{array}{c}1\\0\\-1\end{array}\right)$.
+				
+				En effet, ce filtre le prend en compte que les pixels au dessus et en dessous du pixel courant. Dans le cas ou ceux-ci sont de même couleur, les valeurs après passage dans le masque s'annulent, on voit donc du noir. Si ceux-ci sont différents (bordure horizontale), les valeurs ne s'annulent pas ce qui se traduit pas un pixel blanc.
+				
+				\img{TP2/zebreh.png}{Zèbre horizontal}{1}
+
+			\subsection{Suzan vertical}
+				Afin de ne faire apparaitre que les traits verticaux de l'image suzan.jpg, nous utilisons le masque de convolution suivant: $\left( \begin{array}{ccccc}-1&1&0&1&-1\end{array}\right)$.
+				
+				En effet, ce filtre le prend en compte que les pixels à gauche et à droite du pixel courant. Ce dernier est un mélange du filtre précédent mais détecte les bordure des deux cotés (transition blanc $\rightarrow$ noir et noir $\rightarrow$ blanc). En effet le filtre précédent ne détectait que la transition blanc $\rightarrow$ noir car lors de la transition noir $\rightarrow$ blanc la valeur obtenue était de -255 qui est arrondie à 0 (donc aucune détection).
+				
+				\img{TP2/suzanv.png}{Suzan vertical}{1}
+				
+		\section{Question 4}
+			Après binarisation et analyse, nous trouvons bien 329 cellules.
+
+		\section{Question 5}
+			Afin d'obtenir un résultat $\approx 370$ nous pouvons réaliser les étapes suivantes:
+			\begin{easylist}
+				& Erode
+				& Open
+				& Erode
+				& Open
+				& Erode
+				& Open
+			\end{easylist}
+			
+			\img{TP2/cell370.png}{Cell 370}{0.6}
+			
+			De manière plus logique, nous pouvons réaliser les étapes suivantes:
+			\begin{easylist}
+				& Fill holes
+				& Watershed
+				& Erode
+				& Open
+				& Erode
+				& Open
+				& Erode
+				& Open
+			\end{easylist}
+			
+			Cependant, nous arrivons à 415 particules. Mais on remarque par exemple que l'ancienne 246 a été éclatée en plusieurs cellules.
+			
+			\img{TP2/cell415.png}{Cell 415}{0.6}
+			
 \end{document}
