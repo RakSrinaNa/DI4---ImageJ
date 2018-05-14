@@ -3,7 +3,9 @@ import ij.ImagePlus;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Set;
 
 public class Plugin_ implements PlugInFilter
 {
@@ -21,11 +23,11 @@ public class Plugin_ implements PlugInFilter
 	
 	public void run(ImageProcessor ip)
 	{
-		ArrayList<Color> colors = getColors(ip);
+		Set<Color> colors = getColors(ip, ip.getWidth() * ip.getHeight() * 0.2);
 		IJ.showMessage(getBeautifulColors(colors));
 	}
 	
-	private String getBeautifulColors(ArrayList<Color> colors)
+	private String getBeautifulColors(Collection<Color> colors)
 	{
 		StringBuilder builder = new StringBuilder();
 		for(Color color : colors)
@@ -34,13 +36,23 @@ public class Plugin_ implements PlugInFilter
 		return builder.toString();
 	}
 	
-	private ArrayList<Color> getColors(ImageProcessor ip)
+	private Set<Color> getColors(ImageProcessor ip, double threshold)
 	{
-		ArrayList<Color> colors = new ArrayList<Color>();
+		HashMap<Color, Integer> colors = new HashMap<Color, Integer>();
 		for(int i = 0; i < ip.getWidth(); i++)
 			for(int j = 0; j < ip.getHeight(); j++)
-				colors.add(getClosestColor(ip.get(i, j)));
-		return colors;
+			{
+				Color c = getClosestColor(ip.get(i, j));
+				if(!colors.containsKey(c))
+					colors.put(c, 0);
+				colors.put(c, colors.get(c) + 1);
+			}
+		for(Color c : colors.keySet())
+		{
+			if(colors.get(c) < threshold)
+				colors.remove(c);
+		}
+		return colors.keySet();
 	}
 	
 	private Color getClosestColor(int i)
