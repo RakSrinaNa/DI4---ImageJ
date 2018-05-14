@@ -10,9 +10,9 @@ public class FindSimilar_ implements PlugInFilter
 {
 	public void run(ImageProcessor ip)
 	{
-		String path = "/home/TP/images/";
-		File[] files = listFiles(path);
-		if(files.length != 0)
+		String path = IJ.getFilePath("Selectionnez un dossier avec des images");
+		File[] files = new File(path).listFiles();
+		if(files != null && files.length != 0)
 		{
 			double avgReal = AverageNdg(ip);
 			Map<Double, List<File>> similarities = new HashMap<Double, List<File>>();
@@ -31,6 +31,8 @@ public class FindSimilar_ implements PlugInFilter
 			double minDist = Collections.min(similarities.keySet());
 			IJ.showMessage("L’image la plus proche est " + getBeautifulFiles(similarities.get(minDist)) + " avec une distance de" + minDist);
 		}
+		else
+			IJ.showMessage("Merci de sélectionner un dossier avec des images à comparer");
 	}
 	
 	private String getBeautifulFiles(List<File> files)
@@ -42,15 +44,6 @@ public class FindSimilar_ implements PlugInFilter
 		return builder.toString();
 	}
 	
-	public File[] listFiles(String directoryPath)
-	{
-		File[] files = null;
-		File directoryToScan = new File(directoryPath);
-		files = directoryToScan.listFiles();
-		return files;
-	}
-	
-	// Retourne la moyenne des NdG d’une image en NdG
 	public double AverageNdg(ImageProcessor ip)
 	{
 		byte[] pixels = (byte[]) ip.getPixels();
