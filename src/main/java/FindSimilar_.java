@@ -3,6 +3,7 @@ import ij.ImagePlus;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
+import javax.swing.*;
 import java.io.File;
 import java.util.*;
 
@@ -10,26 +11,35 @@ public class FindSimilar_ implements PlugInFilter
 {
 	public void run(ImageProcessor ip)
 	{
-		String path = IJ.getDir("Selectionnez un dossier avec des images");
-		File[] files = new File(path == null ? "." : path).listFiles();
-		if(files != null && files.length != 0)
+		JFileChooser chooser = new JFileChooser();
+		chooser.setCurrentDirectory(new java.io.File("."));
+		chooser.setDialogTitle("Selectionnez un répertoire avec des images");
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		chooser.setAcceptAllFileFilterUsed(false);
+		chooser.showDialog(null, "OK");
+		File path = chooser.getSelectedFile();
+		if(path != null)
 		{
-			double avgReal = AverageNdg(ip);
-			Map<Double, List<File>> similarities = new HashMap<Double, List<File>>();
-			//initialization variables locales
-			for(File file : files)
+			File[] files = path.listFiles();
+			if(files != null && path.listFiles().length != 0)
 			{
-				// creation d’une image temporaire
-				ImagePlus tempImg = new ImagePlus(file.getAbsolutePath());
-				new ImageConverter(tempImg).convertToGray8();
-				ImageProcessor ipTemp = tempImg.getProcessor();
-				double dst = Math.abs(AverageNdg(ipTemp) - avgReal);
-				if(!similarities.containsKey(dst))
-					similarities.put(dst, new ArrayList<File>());
-				similarities.get(dst).add(file);
+				double avgReal = AverageNdg(ip);
+				Map<Double, List<File>> similarities = new HashMap<Double, List<File>>();
+				//initialization variables locales
+				for(File file : files)
+				{
+					// creation d’une image temporaire
+					ImagePlus tempImg = new ImagePlus(file.getAbsolutePath());
+					new ImageConverter(tempImg).convertToGray8();
+					ImageProcessor ipTemp = tempImg.getProcessor();
+					double dst = Math.abs(AverageNdg(ipTemp) - avgReal);
+					if(!similarities.containsKey(dst))
+						similarities.put(dst, new ArrayList<File>());
+					similarities.get(dst).add(file);
+				}
+				double minDist = Collections.min(similarities.keySet());
+				IJ.showMessage("L’image la plus proche est " + getBeautifulFiles(similarities.get(minDist)) + " avec une distance de" + minDist);
 			}
-			double minDist = Collections.min(similarities.keySet());
-			IJ.showMessage("L’image la plus proche est " + getBeautifulFiles(similarities.get(minDist)) + " avec une distance de" + minDist);
 		}
 		else
 			IJ.showMessage("Merci de sélectionner un dossier avec des images à comparer");
