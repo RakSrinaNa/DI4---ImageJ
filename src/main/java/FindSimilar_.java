@@ -21,7 +21,7 @@ public class FindSimilar_ implements PlugInFilter
 		if(path != null)
 		{
 			File[] files = path.listFiles();
-			if(files != null && path.listFiles().length != 0)
+			if(files != null && files.length != 0)
 			{
 				double avgReal = AverageNdg(ip);
 				Map<Double, List<File>> similarities = new HashMap<Double, List<File>>();
