@@ -10,8 +10,8 @@ public class FindSimilar_ implements PlugInFilter
 {
 	public void run(ImageProcessor ip)
 	{
-		String path = IJ.getFilePath("Selectionnez un dossier avec des images");
-		File[] files = new File(path).listFiles();
+		String path = IJ.getDir("Selectionnez un dossier avec des images");
+		File[] files = new File(path == null ? "." : path).listFiles();
 		if(files != null && files.length != 0)
 		{
 			double avgReal = AverageNdg(ip);
