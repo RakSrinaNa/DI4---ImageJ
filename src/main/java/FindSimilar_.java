@@ -62,4 +62,14 @@ public class FindSimilar_ implements PlugInFilter
 				total += pixels[y * width + x] & 0xff;
 		return total / pixels.length;
 	}
+	
+	public int setup(String arg, ImagePlus imp)
+	{
+		if(arg.equals("about"))
+		{
+			IJ.showMessage("Traitement de l'image v2");
+			return DONE;
+		}
+		return DOES_8G;
+	}
 }
