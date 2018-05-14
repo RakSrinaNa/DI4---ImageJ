@@ -5,8 +5,6 @@ import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import java.io.File;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class FindSimilar_ implements PlugInFilter
 {
@@ -16,7 +14,8 @@ public class FindSimilar_ implements PlugInFilter
 		File[] files = listFiles(path);
 		if(files.length != 0)
 		{
-			Map<Double, List<File>> similarities = new HashMap<>();
+			double avgReal = AverageNdg(ip);
+			Map<Double, List<File>> similarities = new HashMap<Double, List<File>>();
 			//initialization variables locales
 			for(File file : files)
 			{
@@ -24,17 +23,23 @@ public class FindSimilar_ implements PlugInFilter
 				ImagePlus tempImg = new ImagePlus(file.getAbsolutePath());
 				new ImageConverter(tempImg).convertToGray8();
 				ImageProcessor ipTemp = tempImg.getProcessor();
-				double avg = AverageNdg(ipTemp);
-				List<File> files1 = similarities.getOrDefault(avg, new ArrayList<>());
-				files1.add(file);
-				similarities.put(avg, files1);
+				double dst = Math.abs(AverageNdg(ipTemp) - avgReal);
+				if(!similarities.containsKey(dst))
+					similarities.put(dst, new ArrayList<File>());
+				similarities.get(dst).add(file);
 			}
-			double avg = AverageNdg(ip);
-			Map<Double, List<File>> distances = similarities.keySet().stream().collect(Collectors.toMap(k -> k - avg, similarities::get));
-			double dist = distances.keySet().stream().min(Comparator.comparingDouble(Math::abs)).orElse(0D);
-			List<File> closes = distances.getOrDefault(dist, new ArrayList<>());
-			IJ.showMessage("L’image la plus proche est " + closes.stream().map(File::getAbsolutePath).collect(Collectors.joining(", ")) + " avec une distance de" + dist);
+			double minDist = Collections.min(similarities.keySet());
+			IJ.showMessage("L’image la plus proche est " + getBeautifulFiles(similarities.get(minDist)) + " avec une distance de" + minDist);
 		}
+	}
+	
+	private String getBeautifulFiles(List<File> files)
+	{
+		StringBuilder builder = new StringBuilder();
+		for(File file : files)
+			builder.append(file.getAbsolutePath()).append(", ");
+		builder.delete(builder.length() - 2, builder.length());
+		return builder.toString();
 	}
 	
 	public File[] listFiles(String directoryPath)
