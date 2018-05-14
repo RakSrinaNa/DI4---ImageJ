@@ -10,7 +10,7 @@ public class FindSimilar_ implements PlugInFilter
 {
 	public void run(ImageProcessor ip)
 	{
-		String path = IJ.getDirectory("Sélectionnez un dossier avec des images");
+		String path = IJ.getDirectory("Selectionnez un dossier avec des images");
 		File[] files = new File(path == null ? "." : path).listFiles();
 		if(files != null && files.length != 0)
 		{
@@ -29,7 +29,7 @@ public class FindSimilar_ implements PlugInFilter
 				similarities.get(dst).add(file);
 			}
 			double minDist = Collections.min(similarities.keySet());
-			IJ.showMessage("L'image la plus proche est " + getBeautifulFiles(similarities.get(minDist)) + " avec une distance de" + minDist);
+			IJ.showMessage("L'image la plus proche est " + getBeautifulFiles(similarities.get(minDist)) + " avec une distance de " + minDist);
 		}
 		else
 			IJ.showMessage("Merci de sélectionner un dossier avec des images à comparer");
