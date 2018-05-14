@@ -1,13 +1,12 @@
-package fr.mrcraftcod.imagej.plugin;
-import ij.*;
-import ij.process.*;
-import ij.gui.*;
-import java.awt.*;
-import ij.plugin.filter.*;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.plugin.filter.PlugInFilter;
+import ij.process.ImageProcessor;
 
 public class Egalisation_Histogramme_NG implements PlugInFilter {
 
 	public void run(ImageProcessor ip){
+		ip.getPixels();
 		int [] hist = new int[256];
 		int w = ip.getWidth();
 		int h = ip.getHeight();
