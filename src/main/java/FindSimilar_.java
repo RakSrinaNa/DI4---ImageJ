@@ -11,6 +11,7 @@ public class FindSimilar_ implements PlugInFilter
 {
 	public void run(ImageProcessor ip)
 	{
+		IJ.showMessage("HELLO");
 		JFileChooser chooser = new JFileChooser();
 		chooser.setCurrentDirectory(new java.io.File("."));
 		chooser.setDialogTitle("Selectionnez un répertoire avec des images");
