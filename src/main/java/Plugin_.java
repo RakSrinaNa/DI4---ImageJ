@@ -3,9 +3,7 @@ import ij.ImagePlus;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 import java.awt.*;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 
 public class Plugin_ implements PlugInFilter
 {
@@ -29,7 +27,7 @@ public class Plugin_ implements PlugInFilter
 	
 	private String getBeautifulColors(Collection<Color> colors)
 	{
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder(", ");
 		for(Color color : colors)
 			builder.append(color.toString()).append(", ");
 		builder.delete(builder.length() - 2, builder.length());
@@ -47,12 +45,14 @@ public class Plugin_ implements PlugInFilter
 					colors.put(c, 0);
 				colors.put(c, colors.get(c) + 1);
 			}
-		for(Color c : colors.keySet())
+
+		Set<Color> set = new HashSet<Color>();
+		for (Color c : colors.keySet())
 		{
-			if(colors.get(c) < threshold)
-				colors.remove(c);
+			if(colors.get(c) > threshold)
+				set.add(c);
 		}
-		return colors.keySet();
+		return set;
 	}
 	
 	private Color getClosestColor(int i)
@@ -61,15 +61,10 @@ public class Plugin_ implements PlugInFilter
 		Color bestColor = null;
 		
 		Color c = new Color(i);
-		float hsb1[] = new float[3];
-		Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsb1);
 		
 		for(Color c2 : baseColors)
 		{
-			float hsb2[] = new float[3];
-			Color.RGBtoHSB(c2.getRed(), c2.getGreen(), c2.getBlue(), hsb2);
-			
-			double dist = getDistanceHSB(hsb1, hsb2);
+			double dist = getDistance(c, c2);
 			if(dist < minDist)
 			{
 				minDist = dist;
@@ -79,7 +74,11 @@ public class Plugin_ implements PlugInFilter
 		
 		return bestColor;
 	}
-	
+
+	private double getDistance(Color c1, Color c2){
+		return Math.sqrt(Math.pow(c1.getRed() - c2.getRed(), 2) + Math.pow(c1.getGreen() - c2.getGreen(), 2) + Math.pow(c1.getBlue() - c2.getBlue(), 2));
+	}
+
 	private double getDistanceHSB(float[] hsb1, float[] hsb2)
 	{
 		return  Math.sqrt(
