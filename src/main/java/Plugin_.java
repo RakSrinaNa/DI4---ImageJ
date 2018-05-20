@@ -27,10 +27,11 @@ public class Plugin_ implements PlugInFilter
 	
 	private String getBeautifulColors(Collection<Color> colors)
 	{
-		StringBuilder builder = new StringBuilder(", ");
+		StringBuilder builder = new StringBuilder();
 		for(Color color : colors)
 			builder.append(color.toString()).append(", ");
-		builder.delete(builder.length() - 2, builder.length());
+		if(builder.length() > 1)
+			builder.delete(builder.length() - 2, builder.length());
 		return builder.toString();
 	}
 	
@@ -40,10 +41,13 @@ public class Plugin_ implements PlugInFilter
 		for(int i = 0; i < ip.getWidth(); i++)
 			for(int j = 0; j < ip.getHeight(); j++)
 			{
-				Color c = getClosestColor(ip.get(i, j));
+				Color c = getClosestColor(ip.getPixel(i, j));
 				if(!colors.containsKey(c))
 					colors.put(c, 0);
 				colors.put(c, colors.get(c) + 1);
+
+				if(c.equals(Color.BLUE))
+					s += c.toString() + "  ";
 			}
 
 		Set<Color> set = new HashSet<Color>();
@@ -77,15 +81,6 @@ public class Plugin_ implements PlugInFilter
 
 	private double getDistance(Color c1, Color c2){
 		return Math.sqrt(Math.pow(c1.getRed() - c2.getRed(), 2) + Math.pow(c1.getGreen() - c2.getGreen(), 2) + Math.pow(c1.getBlue() - c2.getBlue(), 2));
-	}
-
-	private double getDistanceHSB(float[] hsb1, float[] hsb2)
-	{
-		return  Math.sqrt(
-				0.475 * Math.pow(hsb1[0] - hsb2[0], 2) +
-				0.2875 * Math.pow(hsb1[1] - hsb2[1], 2) +
-				0.2375 * Math.pow(hsb1[2] - hsb2[2], 2)
-		);
 	}
 	
 	public int setup(String arg, ImagePlus imp)
