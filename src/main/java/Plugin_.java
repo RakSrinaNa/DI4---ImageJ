@@ -5,10 +5,7 @@ import ij.process.ImageProcessor;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Plugin_ implements PlugInFilter
 {
@@ -179,7 +176,8 @@ public class Plugin_ implements PlugInFilter
 			double dist = getDistanceHSB(hsb1, hsb2);
 			//double dist = getDistance(c, c2);
 			if(x == 0)
-				console.addtext(String.format("x: %d, y: %d, color: %d, color2: %s, testColor: %s, distance: %f", x, y, i, c.toString(), c2.toString(), dist));
+				//console.addtext(String.format("x: %d, y: %d, color: %s, testColor: %s, distance: %f", x, y, c.toString(), c2.toString(), dist));
+				console.addtext(String.format("x: %d, y: %d, color: %s, testColor: %s, distance: %f", x, y, Arrays.toString(hsb1), Arrays.toString(hsb2), dist));
 			if(dist < minDist)
 			{
 				minDist = dist;
@@ -196,7 +194,7 @@ public class Plugin_ implements PlugInFilter
 				0.475 * Math.pow(hsb1[0] - hsb2[0], 2) +
 						0.2875 * Math.pow(hsb1[1] - hsb2[1], 2) +
 						0.2375 * Math.pow(hsb1[2] - hsb2[2], 2)
-		);
+		) * 100;
 	}
 	
 	private double getDistance(Color c1, Color c2)
