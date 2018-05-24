@@ -130,7 +130,6 @@ public class Plugin_ implements PlugInFilter
 		console.setVisible(true);
 		Set<Color> colors = getColors(ip, ip.getWidth() * ip.getHeight() * 0.2);
 		IJ.showMessage(getBeautifulColors(colors));
-		console.dispose();
 	}
 	
 	private String getBeautifulColors(Collection<Color> colors)
