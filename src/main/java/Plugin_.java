@@ -190,7 +190,7 @@ public class Plugin_ implements PlugInFilter
 	
 	private double getDistanceHSB(float[] hsb1, float[] hsb2)
 	{
-		return (1 - 0.475) * Math.pow(hsb1[0] - hsb2[0], 2) + (1 - 0.2875) * Math.pow(hsb1[1] - hsb2[1], 2) + (1 - 0.2375) * Math.pow(hsb1[2] - hsb2[2], 2);
+		return 0.2 * Math.pow(hsb1[0] - hsb2[0], 2) + 0.4 * Math.pow(hsb1[1] - hsb2[1], 2) + 0.4 * Math.pow(hsb1[2] - hsb2[2], 2);
 	}
 	
 	private double getDistance(Color c1, Color c2)
