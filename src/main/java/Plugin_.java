@@ -197,6 +197,6 @@ public class Plugin_ implements PlugInFilter
 			IJ.showMessage("Traitement de l'image v2");
 			return DONE;
 		}
-		return DOES_8G;
+		return DOES_ALL;
 	}
 }
