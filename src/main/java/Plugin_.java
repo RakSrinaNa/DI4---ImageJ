@@ -125,21 +125,21 @@ public class Plugin_ implements PlugInFilter
 		baseColors.put(Color.ORANGE, "Orange");
 		console = new Console();
 		console.setVisible(true);
-		Set<Color> colors = getColors(ip, ip.getWidth() * ip.getHeight() * 0.1);
-		IJ.showMessage(getBeautifulColors(colors));
+		HashMap<Color, Integer> colors = getColors(ip);
+		IJ.showMessage(getBeautifulColors(colors, ip.getWidth() * ip.getHeight(), 0.1));
 	}
 	
-	private String getBeautifulColors(Collection<Color> colors)
+	private String getBeautifulColors(Map<Color, Integer> colors, int count, double threshold)
 	{
 		StringBuilder builder = new StringBuilder();
-		for(Color color : colors)
-			builder.append(baseColors.get(color)).append(", ");
+		for(Color color : colors.keySet())
+			builder.append(baseColors.get(color)).append(":").append(colors.get(color) / (double)count).append(", ");
 		if(builder.length() > 1)
 			builder.delete(builder.length() - 2, builder.length());
 		return builder.toString();
 	}
 	
-	private Set<Color> getColors(ImageProcessor ip, double threshold)
+	private HashMap<Color, Integer> getColors(ImageProcessor ip)
 	{
 		HashMap<Color, Integer> colors = new HashMap<Color, Integer>();
 		for(int i = 0; i < ip.getWidth(); i++)
@@ -150,14 +150,7 @@ public class Plugin_ implements PlugInFilter
 					colors.put(c, 0);
 				colors.put(c, colors.get(c) + 1);
 			}
-		
-		Set<Color> set = new HashSet<Color>();
-		for(Color c : colors.keySet())
-		{
-			if(colors.get(c) > threshold)
-				set.add(c);
-		}
-		return set;
+		return colors;
 	}
 	
 	private Color getClosestColor(int x, int y, int i)
