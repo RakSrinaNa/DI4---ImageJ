@@ -110,22 +110,22 @@ public class Plugin_ implements PlugInFilter
 		}
 	}
 	
-	private static final Color[] baseColors = {
-			Color.YELLOW,
-			Color.GREEN,
-			Color.RED,
-			Color.BLUE,
-			new Color(102, 51, 0),
-			Color.GRAY,
-			Color.WHITE,
-			Color.BLACK,
-			Color.ORANGE
-	};
+	private static HashMap<Color, String> baseColors;
 	
 	private static Console console;
 	
 	public void run(ImageProcessor ip)
 	{
+		baseColors = new HashMap<Color, String>();
+		baseColors.put(Color.YELLOW, "Jaune");
+		baseColors.put(Color.GREEN, "vert");
+		baseColors.put(Color.RED, "Rouge");
+		baseColors.put(Color.BLUE, "Bleu");
+		baseColors.put(new Color(102, 51, 0), "Marron");
+		baseColors.put(Color.GRAY, "Gris");
+		baseColors.put(Color.WHITE, "Blanc");
+		baseColors.put(Color.BLACK, "Noir");
+		baseColors.put(Color.ORANGE, "Orange");
 		console = new Console();
 		console.setVisible(true);
 		Set<Color> colors = getColors(ip, ip.getWidth() * ip.getHeight() * 0.2);
@@ -136,7 +136,7 @@ public class Plugin_ implements PlugInFilter
 	{
 		StringBuilder builder = new StringBuilder();
 		for(Color color : colors)
-			builder.append(color.toString()).append(", ");
+			builder.append(baseColors.get(color)).append(", ");
 		if(builder.length() > 1)
 			builder.delete(builder.length() - 2, builder.length());
 		return builder.toString();
@@ -169,10 +169,15 @@ public class Plugin_ implements PlugInFilter
 		Color bestColor = null;
 		
 		Color c = new Color(i);
+		float hsb1[] = new float[3];
+		Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsb1);
 		
-		for(Color c2 : baseColors)
+		for(Color c2 : baseColors.keySet())
 		{
-			double dist = getDistance(c, c2);
+			float hsb2[] = new float[3];
+			Color.RGBtoHSB(c2.getRed(), c2.getGreen(), c2.getBlue(), hsb1);
+			double dist = getDistanceHSB(hsb1, hsb2);
+			//double dist = getDistance(c, c2);
 			if(x == 0)
 				console.addtext(String.format("x: %d, y: %d, color: %d, color2: %s, testColor: %s, distance: %f", x, y, i, c.toString(), c2.toString(), dist));
 			if(dist < minDist)
@@ -183,6 +188,15 @@ public class Plugin_ implements PlugInFilter
 		}
 		
 		return bestColor;
+	}
+	
+	private double getDistanceHSB(float[] hsb1, float[] hsb2)
+	{
+		return  Math.sqrt(
+				0.475 * Math.pow(hsb1[0] - hsb2[0], 2) +
+						0.2875 * Math.pow(hsb1[1] - hsb2[1], 2) +
+						0.2375 * Math.pow(hsb1[2] - hsb2[2], 2)
+		);
 	}
 	
 	private double getDistance(Color c1, Color c2)
