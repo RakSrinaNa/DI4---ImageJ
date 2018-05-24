@@ -148,8 +148,7 @@ public class Plugin_ implements PlugInFilter
 		for(int i = 0; i < ip.getWidth(); i++)
 			for(int j = 0; j < ip.getHeight(); j++)
 			{
-				console.addtext("iajzeoaijeazojeaozjeaoijeoazje");
-				Color c = getClosestColor(ip.getPixel(i, j));
+				Color c = getClosestColor(i, j, ip.getPixel(i, j));
 				if(!colors.containsKey(c))
 					colors.put(c, 0);
 				colors.put(c, colors.get(c) + 1);
@@ -164,7 +163,7 @@ public class Plugin_ implements PlugInFilter
 		return set;
 	}
 	
-	private Color getClosestColor(int i)
+	private Color getClosestColor(int x, int y, int i)
 	{
 		double minDist = Double.MAX_VALUE;
 		Color bestColor = null;
@@ -174,6 +173,7 @@ public class Plugin_ implements PlugInFilter
 		for(Color c2 : baseColors)
 		{
 			double dist = getDistance(c, c2);
+			console.addtext(String.format("x: %d, y: %d, color: %d, color2: %s, testColor: %s, distance: %f", x, y, i, c.toString(), c2.toString(), dist));
 			if(dist < minDist)
 			{
 				minDist = dist;
