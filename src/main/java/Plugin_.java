@@ -190,16 +190,12 @@ public class Plugin_ implements PlugInFilter
 	
 	private double getDistanceHSB(float[] hsb1, float[] hsb2)
 	{
-		return  Math.sqrt(
-				0.475 * Math.pow(hsb1[0] - hsb2[0], 2) +
-						0.2875 * Math.pow(hsb1[1] - hsb2[1], 2) +
-						0.2375 * Math.pow(hsb1[2] - hsb2[2], 2)
-		) * 100;
+		return 0.5 * 0.475 * Math.pow(hsb1[0] - hsb2[0], 2) + 0.2875 * Math.pow(hsb1[1] - hsb2[1], 2) + 0.2375 * Math.pow(hsb1[2] - hsb2[2], 2);
 	}
 	
 	private double getDistance(Color c1, Color c2)
 	{
-		return Math.sqrt(Math.pow(c1.getRed() - c2.getRed(), 2) + Math.pow(c1.getGreen() - c2.getGreen(), 2) + Math.pow(c1.getBlue() - c2.getBlue(), 2));
+		return Math.pow(c1.getRed() - c2.getRed(), 2) + Math.pow(c1.getGreen() - c2.getGreen(), 2) + Math.pow(c1.getBlue() - c2.getBlue(), 2);
 	}
 	
 	public int setup(String arg, ImagePlus imp)
