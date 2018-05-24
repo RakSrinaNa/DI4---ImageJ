@@ -51,7 +51,8 @@ public class Plugin_ implements PlugInFilter
 			getContentPane().add(button, BorderLayout.SOUTH);
 			setVisible(true);
 			addWindowListener(this);
-			button.addActionListener(new ActionListener(){
+			button.addActionListener(new ActionListener()
+			{
 				@Override
 				public void actionPerformed(ActionEvent e)
 				{
@@ -66,8 +67,8 @@ public class Plugin_ implements PlugInFilter
 			{
 				textArea.append("\n" + text);
 				textArea.repaint();
-				if(textArea.getText().length() > MAXCHARCOUNT)
-					textArea.setText(textArea.getText().substring(MAXCHARCOUNT / 10, textArea.getText().length()));
+				//if(textArea.getText().length() > MAXCHARCOUNT)
+				//	textArea.setText(textArea.getText().substring(MAXCHARCOUNT / 10, textArea.getText().length()));
 			}
 		}
 		
@@ -173,7 +174,8 @@ public class Plugin_ implements PlugInFilter
 		for(Color c2 : baseColors)
 		{
 			double dist = getDistance(c, c2);
-			console.addtext(String.format("x: %d, y: %d, color: %d, color2: %s, testColor: %s, distance: %f", x, y, i, c.toString(), c2.toString(), dist));
+			if(x == 0)
+				console.addtext(String.format("x: %d, y: %d, color: %d, color2: %s, testColor: %s, distance: %f", x, y, i, c.toString(), c2.toString(), dist));
 			if(dist < minDist)
 			{
 				minDist = dist;
