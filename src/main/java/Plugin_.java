@@ -5,7 +5,10 @@ import ij.process.ImageProcessor;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
+import java.awt.image.ColorModel;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Plugin_ implements PlugInFilter
 {
@@ -133,7 +136,7 @@ public class Plugin_ implements PlugInFilter
 	{
 		StringBuilder builder = new StringBuilder();
 		for(Color color : colors.keySet())
-			builder.append(baseColors.get(color)).append(":").append(colors.get(color) / (double)count).append(", ");
+			builder.append(baseColors.get(color)).append(":").append(colors.get(color) / (double) count).append(", ");
 		if(builder.length() > 1)
 			builder.delete(builder.length() - 2, builder.length());
 		return builder.toString();
@@ -141,15 +144,21 @@ public class Plugin_ implements PlugInFilter
 	
 	private HashMap<Color, Integer> getColors(ImageProcessor ip)
 	{
+		ImageProcessor ip2 = ip.createProcessor(ip.getWidth(), ip.getHeight());
+		ip.setColorModel(ColorModel.getRGBdefault());
 		HashMap<Color, Integer> colors = new HashMap<Color, Integer>();
 		for(int i = 0; i < ip.getWidth(); i++)
+		{
 			for(int j = 0; j < ip.getHeight(); j++)
 			{
 				Color c = getClosestColor(i, j, ip.getColorModel().getRGB(ip.getPixel(i, j)));
 				if(!colors.containsKey(c))
 					colors.put(c, 0);
 				colors.put(c, colors.get(c) + 1);
+				ip2.putPixel(i, j, c.getRGB());
 			}
+		}
+		ip.insert(ip2, 0, 0);
 		return colors;
 	}
 	
