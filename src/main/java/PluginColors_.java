@@ -126,26 +126,26 @@ public class PluginColors_ implements PlugInFilter
 		baseColors.put(Color.WHITE, "Blanc");
 		baseColors.put(Color.BLACK, "Noir");
 		baseColors.put(Color.ORANGE, "Orange");
-
+		
 		console = new Console();
 		console.setVisible(true);
-
+		
 		HashMap<Color, Double> colors = getColors(ip);
-
+		
 		IJ.showMessage(getBeautifulColors(colors, ip.getWidth() * ip.getHeight(), 0.1));
 	}
 	
 	private String getBeautifulColors(Map<Color, Double> colors, int count, double threshold)
 	{
 		StringBuilder builder = new StringBuilder();
-
+		
 		for(Color color : colors.keySet())
 			if(colors.get(color) > count * threshold)
 				builder.append(baseColors.get(color)).append(":").append(colors.get(color) / (double) count).append(", ");
-
+		
 		if(builder.length() > 1)
 			builder.delete(builder.length() - 2, builder.length());
-
+		
 		return builder.toString();
 	}
 	
@@ -153,15 +153,16 @@ public class PluginColors_ implements PlugInFilter
 	{
 		ImageProcessor ip2 = ip.createProcessor(ip.getWidth(), ip.getHeight());
 		ip.setColorModel(ColorModel.getRGBdefault());
-
+		
 		HashMap<Color, Double> colors = new HashMap<Color, Double>();
-
+		
 		for(int i = 0; i < ip.getWidth(); i++)
 		{
 			for(int j = 0; j < ip.getHeight(); j++)
 			{
 				HashMap<Color, Double> closest = getClosestColors(i, j, ip.getColorModel().getRGB(ip.getPixel(i, j)));
-				for(Color c : colors.keySet()) {
+				for(Color c : closest.keySet())
+				{
 					if(!colors.containsKey(c))
 						colors.put(c, 0.0);
 					colors.put(c, colors.get(c) + closest.get(c));
@@ -178,35 +179,29 @@ public class PluginColors_ implements PlugInFilter
 		Color c = new Color(i);
 		float hsb1[] = new float[3];
 		Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsb1);
-
+		
 		//Tab comp
 		HashMap<Color, Double> ref = new HashMap<Color, Double>();
-
-
+		
 		for(Color c2 : baseColors.keySet())
 		{
 			//Set color ref
 			float hsb2[] = new float[3];
 			Color.RGBtoHSB(c2.getRed(), c2.getGreen(), c2.getBlue(), hsb2);
-
-			Double dist  = getDistanceHSB(hsb1, hsb2);
-			ref.put(c2, dist);
-
+			ref.put(c2, getDistanceHSB(hsb1, hsb2));
 		}
-
+		
 		//Normalize
 		double sum = 0.0;
-		for(Color c3 : ref.keySet())
-			sum += ref.get(c3);
-
+		for(double value : ref.values())
+			sum += value;
+		
 		for(Color c3 : ref.keySet())
 			ref.put(c3, ref.get(c3) / sum);
-
-
+		
 		if(x == 0)
 			console.addtext(String.format("x: %d\t y: %d\t color: %s\t distance: %s", x, y, Arrays.toString(hsb1), ref.toString()));
-
-
+		
 		return ref;
 	}
 	
@@ -222,6 +217,6 @@ public class PluginColors_ implements PlugInFilter
 			IJ.showMessage("Traitement de l'image v2");
 			return DONE;
 		}
-		return DOES_RGB + DOES_8G + DOES_16 + DOES_32;
+		return DOES_ALL;
 	}
 }
