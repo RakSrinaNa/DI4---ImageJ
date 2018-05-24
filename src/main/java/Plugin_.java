@@ -125,7 +125,7 @@ public class Plugin_ implements PlugInFilter
 		baseColors.put(Color.ORANGE, "Orange");
 		console = new Console();
 		console.setVisible(true);
-		Set<Color> colors = getColors(ip, ip.getWidth() * ip.getHeight() * 0.0);
+		Set<Color> colors = getColors(ip, ip.getWidth() * ip.getHeight() * 0.1);
 		IJ.showMessage(getBeautifulColors(colors));
 	}
 	
