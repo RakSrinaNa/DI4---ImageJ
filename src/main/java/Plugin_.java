@@ -148,7 +148,7 @@ public class Plugin_ implements PlugInFilter
 		for(int i = 0; i < ip.getWidth(); i++)
 			for(int j = 0; j < ip.getHeight(); j++)
 			{
-				Color c = getClosestColor(i, j, ip.getPixel(i, j));
+				Color c = getClosestColor(i, j, ip.getColorModel().getRGB(ip.getPixel(i, j)));
 				if(!colors.containsKey(c))
 					colors.put(c, 0);
 				colors.put(c, colors.get(c) + 1);
