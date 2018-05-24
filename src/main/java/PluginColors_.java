@@ -140,7 +140,7 @@ public class PluginColors_ implements PlugInFilter
 		StringBuilder builder = new StringBuilder();
 		
 		for(Color color : colors.keySet())
-			if(colors.get(color) > count * threshold)
+			//if(colors.get(color) < count * threshold)
 				builder.append(baseColors.get(color)).append(":").append(colors.get(color) / (double) count).append(", ");
 		
 		if(builder.length() > 1)
@@ -166,6 +166,7 @@ public class PluginColors_ implements PlugInFilter
 					if(!colors.containsKey(c))
 						colors.put(c, 0.0);
 					colors.put(c, colors.get(c) + closest.get(c));
+					ip2.putPixel(i, j, getMax(closest).getRGB());
 				}
 			}
 		}
@@ -207,9 +208,19 @@ public class PluginColors_ implements PlugInFilter
 	
 	private double getDistanceHSB(float[] hsb1, float[] hsb2)
 	{
-		return 0.22 * Math.sqrt(Math.pow(hsb1[0] - hsb2[0], 2)) + 0.39 * Math.sqrt(Math.pow(hsb1[1] - hsb2[1], 2)) + 0.39 * Math.sqrt(Math.pow(hsb1[2] - hsb2[2], 2));
+		return 0.22 *(Math.pow(hsb1[0] - hsb2[0], 2)) + 0.39 * (Math.pow(hsb1[1] - hsb2[1], 2)) + 0.39 * (Math.pow(hsb1[2] - hsb2[2], 2));
 	}
-	
+
+	private Color getMax(HashMap<Color, Double> h){
+		Color c = null;
+
+		for(Color c2 : h.keySet())
+			if(c == null || h.get(c) > h.get(c2))
+				c = c2;
+
+		return c;
+	}
+
 	public int setup(String arg, ImagePlus imp)
 	{
 		if(arg.equals("about"))
