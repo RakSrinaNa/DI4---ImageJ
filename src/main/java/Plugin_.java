@@ -172,7 +172,7 @@ public class Plugin_ implements PlugInFilter
 		for(Color c2 : baseColors.keySet())
 		{
 			float hsb2[] = new float[3];
-			Color.RGBtoHSB(c2.getRed(), c2.getGreen(), c2.getBlue(), hsb1);
+			Color.RGBtoHSB(c2.getRed(), c2.getGreen(), c2.getBlue(), hsb2);
 			double dist = getDistanceHSB(hsb1, hsb2);
 			//double dist = getDistance(c, c2);
 			if(x == 0)
