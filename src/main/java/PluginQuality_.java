@@ -18,7 +18,7 @@ public class PluginQuality_ implements PlugInFilter
 {
 	public void run(ImageProcessor ip)
 	{
-		printOut(WindowManager.getActiveWindow().getName(), getIntensity(ip.duplicate()), getBlurrNess(ip.duplicate()));
+		printOut(getIntensity(ip.duplicate()), getBlurrNess(ip.duplicate()));
 	}
 	
 	private String getBlurrNess(ImageProcessor ip)
@@ -140,9 +140,9 @@ public class PluginQuality_ implements PlugInFilter
 		return valTxt;
 	}
 	
-	private void printOut(String title, String intensity, String blurrness)
+	private void printOut(String intensity, String blurrness)
 	{
-		File outFile = new File(title + "_tag" + ".txt");
+		File outFile = new File(WindowManager.getActiveWindow().getName() + "_tag" + ".txt");
 		PrintWriter pw = null;
 		try
 		{

@@ -68,7 +68,7 @@ public class PluginColor_ implements PlugInFilter
 		getColors(ip.duplicate().convertToRGB());
 	}
 	
-	private String getBeautifulColors(String title, Map<String, Integer> colors, int count, double threshold)
+	private String getBeautifulColors(Map<String, Integer> colors, int count, double threshold)
 	{
 		StringBuilder builder = new StringBuilder();
 		for(String color : colors.keySet())
@@ -78,7 +78,7 @@ public class PluginColor_ implements PlugInFilter
 		if(builder.length() > 1)
 			builder.delete(builder.length() - 2, builder.length());
 		
-		File outFile = new File(title + "_tag" + ".txt");
+		File outFile = new File(WindowManager.getActiveWindow().getName() + "_tag" + ".txt");
 		PrintWriter pw = null;
 		try
 		{
@@ -128,7 +128,7 @@ public class PluginColor_ implements PlugInFilter
 			}
 		}
 		
-		displayImage("Coleurs: " + getBeautifulColors(WindowManager.getActiveWindow().getName(), colors, ip.getWidth() * ip.getHeight(), 0.1), ip2);
+		displayImage("Coleurs: " + getBeautifulColors(colors, ip.getWidth() * ip.getHeight(), 0.1), ip2);
 		
 		return colors;
 	}
