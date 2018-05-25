@@ -128,7 +128,7 @@ public class PluginColor_ implements PlugInFilter
 			}
 		}
 		
-		displayImage("Coleurs: " + getBeautifulColors(WindowManager.getActiveWindow().getName(), colors, ip.getWidth() * ip.getHeight(), 0.1), ip2);
+		displayImage("Coleurs: " + getBeautifulColors(new File(IJ.getDirectory("image")).getName(), colors, ip.getWidth() * ip.getHeight(), 0.1), ip2);
 		
 		return colors;
 	}

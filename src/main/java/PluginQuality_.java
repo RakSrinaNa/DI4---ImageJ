@@ -18,7 +18,7 @@ public class PluginQuality_ implements PlugInFilter
 {
 	public void run(ImageProcessor ip)
 	{
-		printOut(WindowManager.getActiveWindow().getName(), getIntensity(ip.duplicate()), getBlurrNess(ip.duplicate()));
+		printOut(new File(IJ.getDirectory("image")).getName(), getIntensity(ip.duplicate()), getBlurrNess(ip.duplicate()));
 	}
 	
 	private String getBlurrNess(ImageProcessor ip)
