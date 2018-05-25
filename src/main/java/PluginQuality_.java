@@ -3,6 +3,7 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
 import ij.plugin.filter.PlugInFilter;
+import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -12,25 +13,135 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.Map;
 
 public class PluginQuality_ implements PlugInFilter
 {
 	public void run(ImageProcessor ip)
 	{
-		getIntensity(ip.duplicate().convertToRGB());
+		printOut(WindowManager.getActiveWindow().getName(), getIntensity(ip.duplicate()), getBlurrNess(ip.duplicate()));
 	}
 	
-	private String getBeautifulIntensity(String title, Map<String, Double> colors, double threshold)
+	private String getBlurrNess(ImageProcessor ip)
 	{
-		StringBuilder builder = new StringBuilder();
-		for(String color : colors.keySet())
-			if(colors.get(color) > threshold)
-				builder.append(color).append(":").append(String.format("%.2f%%", colors.get(color) * 100)).append(", ");
+		ImagePlus imagePlus = new ImagePlus("TESTT", ip);
+		ImageConverter imageConverter = new ImageConverter(imagePlus);
+		imageConverter.convertToGray8();
+		ImageProcessor imageProcessor = imagePlus.getProcessor().convertToFloatProcessor();
+		/*imageProcessor.convolve(new float[]{ //LoG, sigma=1.4
+		                                     0,0,3,2,2,2,3,0,0,
+		                                     0,2,3,5,5,5,3,2,0,
+		                                     3,3,5,3,0,3,5,3,3,
+		                                     2,5,3,-12,-23,-12,3,5,2,
+		                                     2,5,0,-23,-40,-23,0,5,2,
+		                                     2,5,3,-12,-23,-12,3,5,2,
+		                                     3,3,5,3,0,3,5,3,3,
+		                                     0,2,3,5,5,5,3,2,0,
+		                                     0,0,3,2,2,2,3,0,0
+		}, 9, 9);*/
+		imageProcessor.convolve(new float[]{ //LoG, sigma=1.4
+		                                     0,
+		                                     1,
+		                                     1,
+		                                     2,
+		                                     2,
+		                                     2,
+		                                     1,
+		                                     1,
+		                                     0,
+		                                     1,
+		                                     2,
+		                                     4,
+		                                     5,
+		                                     5,
+		                                     5,
+		                                     4,
+		                                     2,
+		                                     1,
+		                                     1,
+		                                     4,
+		                                     5,
+		                                     3,
+		                                     0,
+		                                     3,
+		                                     5,
+		                                     4,
+		                                     1,
+		                                     2,
+		                                     5,
+		                                     3,
+		                                     -12,
+		                                     -24,
+		                                     -12,
+		                                     3,
+		                                     5,
+		                                     2,
+		                                     2,
+		                                     5,
+		                                     0,
+		                                     -24,
+		                                     -40,
+		                                     -24,
+		                                     0,
+		                                     5,
+		                                     2,
+		                                     2,
+		                                     5,
+		                                     3,
+		                                     -12,
+		                                     -24,
+		                                     -12,
+		                                     3,
+		                                     5,
+		                                     2,
+		                                     1,
+		                                     4,
+		                                     5,
+		                                     3,
+		                                     0,
+		                                     3,
+		                                     5,
+		                                     4,
+		                                     1,
+		                                     1,
+		                                     2,
+		                                     4,
+		                                     5,
+		                                     5,
+		                                     5,
+		                                     4,
+		                                     2,
+		                                     1,
+		                                     0,
+		                                     1,
+		                                     1,
+		                                     2,
+		                                     2,
+		                                     2,
+		                                     1,
+		                                     1,
+		                                     0,
+		                                     }, 9, 9);
+		//imageProcessor.convolve3x3(new int[]{0, 1, 0, 1, -4, 1, 0, 1, 0});
 		
-		if(builder.length() > 1)
-			builder.delete(builder.length() - 2, builder.length());
+		long average = 0;
+		for(int i = 0; i < ip.getWidth(); i++)
+			for(int j = 0; j < ip.getHeight(); j++)
+				average += ip.getPixelValue(i, j);
+		average /= ip.getWidth() * ip.getHeight();
 		
+		long variance = 0;
+		for(int i = 0; i < ip.getWidth(); i++)
+			for(int j = 0; j < ip.getHeight(); j++)
+				variance += Math.pow(ip.getPixelValue(i, j) - average, 2);
+		variance /= ip.getWidth() * ip.getHeight();
+		
+		String valTxt = variance < 3000 ? "Net" : "Flou";
+		displayImage("Log: " + valTxt + "(" + variance + ")", imageProcessor);
+		return valTxt;
+	}
+	
+	private void printOut(String title, String intensity, String blurrness)
+	{
 		File outFile = new File(title + "_tag" + ".txt");
 		PrintWriter pw = null;
 		try
@@ -38,11 +149,7 @@ public class PluginQuality_ implements PlugInFilter
 			pw = new PrintWriter(new FileOutputStream(outFile));
 			try
 			{
-				pw.print("Quality: ");
-				for(String color : colors.keySet())
-					if(colors.get(color) > threshold)
-						builder.append(color).append(" ");
-				pw.println();
+				pw.println("Quality: " + intensity + " " + blurrness);
 			}
 			catch(Exception e)
 			{
@@ -58,12 +165,11 @@ public class PluginQuality_ implements PlugInFilter
 			if(pw != null)
 				pw.close();
 		}
-		
-		return builder.toString();
 	}
 	
-	private HashMap<String, Double> getIntensity(ImageProcessor ip)
+	private String getIntensity(ImageProcessor ip)
 	{
+		ip = ip.convertToRGB();
 		ImageProcessor ip2 = ip.createProcessor(ip.getWidth(), ip.getHeight());
 		ip.medianFilter();
 		ip.setColorModel(ColorModel.getRGBdefault());
@@ -84,15 +190,17 @@ public class PluginQuality_ implements PlugInFilter
 			}
 		}
 		
+		String maxKey = null;
 		double max = 0;
-		for(double count : colors.values())
-			max = Math.max(max, count);
 		for(String key : colors.keySet())
-			colors.put(key, colors.get(key) / max);
-		
-		IJ.showMessage("Intensité: " + getBeautifulIntensity(WindowManager.getActiveWindow().getName(), colors, 0.6));
-		
-		return colors;
+		{
+			double count = colors.get(key);
+			max = Math.max(max, count);
+			if(max == count)
+				maxKey = key;
+		}
+		IJ.showMessage("Intensity", maxKey);
+		return maxKey;
 	}
 	
 	private void displayImage(String title, ImageProcessor imageProcessor)
