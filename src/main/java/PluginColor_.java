@@ -8,6 +8,9 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.ColorModel;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,16 +22,19 @@ public class PluginColor_ implements PlugInFilter
 	{
 		baseColors = new HashMap<Color, String>();
 		baseColors.put(new Color(255, 255, 0), "Jaune");
+		
 		baseColors.put(new Color(0, 255, 0), "Vert");
 		baseColors.put(new Color(0, 189, 9), "Vert");
 		baseColors.put(new Color(105, 240, 112), "Vert");
 		baseColors.put(new Color(0, 118, 36), "Vert");
 		baseColors.put(new Color(72, 86, 33), "Vert");
 		baseColors.put(new Color(44, 58, 58), "Vert");
+		
 		baseColors.put(new Color(255, 0, 0), "Rouge");
 		baseColors.put(new Color(255, 0, 66), "Rouge");
 		baseColors.put(new Color(199, 0, 39), "Rouge");
 		baseColors.put(new Color(129, 25, 0), "Rouge");
+		
 		baseColors.put(new Color(0, 0, 255), "Bleu");
 		baseColors.put(new Color(17, 31, 58), "Bleu");
 		baseColors.put(new Color(119, 24, 255), "Bleu");
@@ -39,25 +45,30 @@ public class PluginColor_ implements PlugInFilter
 		baseColors.put(new Color(0, 174, 255), "Bleu");
 		baseColors.put(new Color(134, 217, 255), "Bleu");
 		baseColors.put(new Color(98, 140, 255), "Bleu");
+		
 		baseColors.put(new Color(102, 51, 0), "Marron");
 		baseColors.put(new Color(113, 76, 43), "Marron");
+		
 		baseColors.put(new Color(128, 128, 128), "Gris");
 		baseColors.put(new Color(192, 192, 192), "Gris");
 		baseColors.put(new Color(64, 64, 64), "Gris");
 		baseColors.put(new Color(64, 64, 64), "Gris");
 		baseColors.put(new Color(30, 19, 17), "Gris");
+		
 		baseColors.put(new Color(255, 255, 255), "Blanc");
 		baseColors.put(new Color(202, 212, 221), "Blanc");
+		
 		baseColors.put(new Color(0, 0, 0), "Noir");
 		baseColors.put(new Color(2, 11, 12), "Noir");
 		baseColors.put(new Color(7, 18, 19), "Noir");
+		
 		baseColors.put(new Color(255, 200, 0), "Orange");
 		baseColors.put(new Color(220, 74, 1), "Orange");
 		baseColors.put(new Color(234, 142, 119), "Orange");
 		getColors(ip.duplicate().convertToRGB());
 	}
 	
-	private String getBeautifulColors(Map<String, Integer> colors, int count, double threshold)
+	private String getBeautifulColors(String title, Map<String, Integer> colors, int count, double threshold)
 	{
 		StringBuilder builder = new StringBuilder();
 		for(String color : colors.keySet())
@@ -66,6 +77,34 @@ public class PluginColor_ implements PlugInFilter
 		
 		if(builder.length() > 1)
 			builder.delete(builder.length() - 2, builder.length());
+		
+		File outFile = new File(title + "_tag" + ".txt");
+		PrintWriter pw = null;
+		try
+		{
+			pw = new PrintWriter(new FileOutputStream(outFile));
+			try
+			{
+				pw.print("Quality: ");
+				for(String color : colors.keySet())
+					if(colors.get(color) > threshold)
+						builder.append(color).append(" ");
+				pw.println();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			if(pw != null)
+				pw.close();
+		}
 		
 		return builder.toString();
 	}
@@ -89,7 +128,7 @@ public class PluginColor_ implements PlugInFilter
 			}
 		}
 		
-		displayImage("Coleurs: " + getBeautifulColors(colors, ip.getWidth() * ip.getHeight(), 0.1), ip2);
+		displayImage("Coleurs: " + getBeautifulColors(WindowManager.getActiveWindow().getName(), colors, ip.getWidth() * ip.getHeight(), 0.1), ip2);
 		
 		return colors;
 	}
@@ -123,12 +162,6 @@ public class PluginColor_ implements PlugInFilter
 			float hsb2[] = new float[3];
 			Color.RGBtoHSB(c2.getRed(), c2.getGreen(), c2.getBlue(), hsb2);
 			double dist = getDistanceHSB(hsb1, hsb2);
-			//double dist = getDistance(c, c2);
-			if(x == 0)
-			{
-				//console.addtext(String.format("x: %d, y: %d, color: %s, testColor: %s, distance: %f", x, y, c.toString(), c2.toString(), dist));
-				//IJ.log(String.format("x: %d, y: %d, color: %s, testColor: %s, distance: %f", x, y, Arrays.toString(hsb1), Arrays.toString(hsb2), dist));
-			}
 			if(dist < minDist)
 			{
 				minDist = dist;
@@ -142,11 +175,6 @@ public class PluginColor_ implements PlugInFilter
 	private double getDistanceHSB(float[] hsb1, float[] hsb2)
 	{
 		return 0.24 * Math.sqrt(Math.pow(hsb1[0] - hsb2[0], 2)) + 0.38 * Math.sqrt(Math.pow(hsb1[1] - hsb2[1], 2)) + 0.38 * Math.sqrt(Math.pow(hsb1[2] - hsb2[2], 2));
-	}
-	
-	private double getDistance(Color c1, Color c2)
-	{
-		return Math.pow(c1.getRed() - c2.getRed(), 2) + Math.pow(c1.getGreen() - c2.getGreen(), 2) + Math.pow(c1.getBlue() - c2.getBlue(), 2);
 	}
 	
 	public int setup(String arg, ImagePlus imp)

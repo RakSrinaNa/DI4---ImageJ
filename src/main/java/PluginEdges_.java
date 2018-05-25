@@ -24,26 +24,14 @@ public class PluginEdges_ implements PlugInFilter
 		ImageProcessor ip2 = ip.duplicate();
 		Convolver cv = new Convolver();
 		cv.convolve(ip, new float[]{
-				-1,
-				0,
-				1,
-				-2,
-				0,
-				2,
-				-1,
-				0,
-				1
+				-1, 0, 1,
+				-2, 0, 2,
+				-1, 0, 1
 		}, 3, 3);
 		cv.convolve(ip2, new float[]{
-				-1,
-				-2,
-				-1,
-				0,
-				0,
-				0,
-				1,
-				2,
-				1
+				-1, -2, -1,
+				0, 0, 0,
+				1, 2, 1
 		}, 3, 3);
 		
 		for(int i = 0; i < ip.getWidth(); i++)

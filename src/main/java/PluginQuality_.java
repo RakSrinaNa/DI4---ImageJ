@@ -8,17 +8,20 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.ColorModel;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PluginBrightness_ implements PlugInFilter
+public class PluginQuality_ implements PlugInFilter
 {
 	public void run(ImageProcessor ip)
 	{
 		getIntensity(ip.duplicate().convertToRGB());
 	}
 	
-	private String getBeautifulIntensity(Map<String, Double> colors, double threshold)
+	private String getBeautifulIntensity(String title, Map<String, Double> colors, double threshold)
 	{
 		StringBuilder builder = new StringBuilder();
 		for(String color : colors.keySet())
@@ -27,6 +30,34 @@ public class PluginBrightness_ implements PlugInFilter
 		
 		if(builder.length() > 1)
 			builder.delete(builder.length() - 2, builder.length());
+		
+		File outFile = new File(title + "_tag" + ".txt");
+		PrintWriter pw = null;
+		try
+		{
+			pw = new PrintWriter(new FileOutputStream(outFile));
+			try
+			{
+				pw.print("Quality: ");
+				for(String color : colors.keySet())
+					if(colors.get(color) > threshold)
+						builder.append(color).append(" ");
+				pw.println();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			if(pw != null)
+				pw.close();
+		}
 		
 		return builder.toString();
 	}
@@ -59,7 +90,7 @@ public class PluginBrightness_ implements PlugInFilter
 		for(String key : colors.keySet())
 			colors.put(key, colors.get(key) / max);
 		
-		IJ.showMessage("Intensité: " + getBeautifulIntensity(colors, 0.6));
+		IJ.showMessage("Intensité: " + getBeautifulIntensity(WindowManager.getActiveWindow().getName(), colors, 0.6));
 		
 		return colors;
 	}
@@ -67,7 +98,8 @@ public class PluginBrightness_ implements PlugInFilter
 	private void displayImage(String title, ImageProcessor imageProcessor)
 	{
 		final ImageWindow iw = new ImageWindow(new ImagePlus(WindowManager.makeUniqueName(title), imageProcessor));
-		iw.addWindowListener(new WindowAdapter(){
+		iw.addWindowListener(new WindowAdapter()
+		{
 			@Override
 			public void windowClosed(WindowEvent e)
 			{

@@ -284,9 +284,27 @@
 			L'algorithme calcul le niveau de gris moyen de l'image. Plus celui-ci est élevé, plus l'image d'origine était claire, et inversement.
 			
 		\section{Question 5}
-			\lstinputlisting[caption=MonPlugin\_.java]{../src/main/java/FindSimilar_.java}
+			\lstinputlisting[caption=FindSimilar\_.java]{../src/main/java/FindSimilar_.java}
 			
 		\section{Question 6}
 			Voir le fichier Java \cbo{FindSimilar\_}.
+		
+		\section{Question 7}
+			\lstinputlisting[caption=PluginColor\_.java]{../src/main/java/PluginColor_.java}
+			
+			Afin de récupérer les couleurs dominantes, nous parcourons chaque pixels. Nous comparons ces derniers à des couleurs de référence. Cette comparaison est basée sur le calcul d'une distance dans l'espace HSB, puis nous gardons la plus petite, qui correspond à la couleur la plus proche.
+			
+			Ces résultats de comparaison sont stockées dans un tableau qui, pour chaque couleur de référence, compte le nombre de pixels associés. Nous considérons ensuite que les couleurs présentes sur plus de 10\% des des pixels de l'image sont notables. Nous les écrivons donc dans le fichier de sortie.
+			
+			Afin d'assurer d'être le plus précis possible, nous avons enregistré des nuances pour chaque couleur. Par exemple le bleu pur RGB (0, 0, 255) est extrêmement foncé et fluo. Ainsi les bleus plus doux comme le ciel ou la mer ne sont donc pas reconnus comme bleu mais plutôt comme une couleur clair, gris ou blanc.
+			
+			\lstinputlisting[caption=PluginQuality\_.java]{../src/main/java/PluginQuality_.java}
+			
+			\lstinputlisting[caption=PluginEdges\_.java]{../src/main/java/PluginEdges_.java}
+			Ce plugin permet de faire une détection de contour grace à des masques de convolutions.
+			
+			Un premier permet de détecter les bordures verticales, tandis qu'un deuxième les bordures horizontales. Par la suite nous combinons ces résultats avec une distance euclidienne.
+			
+			Nous obtenons ainsi à la fin une image où les bordures sont en blanc. Plus ce blanc est intense, plus la bordure est marquée.
 			
 \end{document}
