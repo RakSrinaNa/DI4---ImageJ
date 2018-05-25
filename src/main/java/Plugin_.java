@@ -162,7 +162,15 @@ public class Plugin_ implements PlugInFilter
 				ip2.putPixel(i, j, c.getRGB());
 			}
 		}
-		AWTImageComponent component = new AWTImageComponent(ip2.createImage());
+		
+		displayImage(ip2);
+		
+		return colors;
+	}
+	
+	private void displayImage(ImageProcessor imageProcessor)
+	{
+		AWTImageComponent component = new AWTImageComponent(imageProcessor.createImage());
 		ScrollPane scrollPane = new ScrollPane();
 		scrollPane.add(component);
 		Frame f = new Frame();
@@ -174,10 +182,9 @@ public class Plugin_ implements PlugInFilter
 			}
 		});
 		f.add(scrollPane);
-		f.setSize(400,400);
-		f.setLocation(200,200);
+		f.setSize(imageProcessor.getWidth(), imageProcessor.getHeight());
+		f.setLocation(200, 200);
 		f.setVisible(true);
-		return colors;
 	}
 	
 	class AWTImageComponent extends Panel
@@ -196,8 +203,8 @@ public class Plugin_ implements PlugInFilter
 			int h = getHeight();
 			int imageWidth = image.getWidth(this);
 			int imageHeight = image.getHeight(this);
-			int x = (w - imageWidth)/2;
-			int y = (h - imageHeight)/2;
+			int x = (w - imageWidth) / 2;
+			int y = (h - imageHeight) / 2;
 			g.drawImage(image, x, y, this);
 		}
 		
