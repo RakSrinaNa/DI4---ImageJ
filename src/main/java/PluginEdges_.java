@@ -6,6 +6,9 @@ import ij.plugin.filter.Convolver;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.Random;
 
 public class PluginEdges_ implements PlugInFilter
 {
@@ -51,7 +54,15 @@ public class PluginEdges_ implements PlugInFilter
 	
 	private void displayImage(String title, ImageProcessor imageProcessor)
 	{
-		ImageWindow iw = new ImageWindow(new ImagePlus(WindowManager.makeUniqueName(title), imageProcessor));
+		final ImageWindow iw = new ImageWindow(new ImagePlus(WindowManager.makeUniqueName(title + new Random().nextInt()), imageProcessor));
+		iw.addWindowListener(new WindowAdapter(){
+			@Override
+			public void windowClosed(WindowEvent e)
+			{
+				super.windowClosed(e);
+				WindowManager.removeWindow(iw);
+			}
+		});
 		WindowManager.addWindow(iw);
 	}
 	

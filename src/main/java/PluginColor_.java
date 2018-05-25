@@ -5,6 +5,8 @@ import ij.gui.ImageWindow;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.ColorModel;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +28,9 @@ public class PluginColor_ implements PlugInFilter
 		baseColors.put(new Color(255, 0, 0), "Rouge");
 		baseColors.put(new Color(255, 0, 66), "Rouge");
 		baseColors.put(new Color(199, 0, 39), "Rouge");
+		baseColors.put(new Color(129, 25, 0), "Rouge");
 		baseColors.put(new Color(0, 0, 255), "Bleu");
+		baseColors.put(new Color(17, 31, 58), "Bleu");
 		baseColors.put(new Color(119, 24, 255), "Bleu");
 		baseColors.put(new Color(91, 33, 74), "Bleu");
 		baseColors.put(new Color(117, 63, 121), "Bleu");
@@ -36,17 +40,21 @@ public class PluginColor_ implements PlugInFilter
 		baseColors.put(new Color(134, 217, 255), "Bleu");
 		baseColors.put(new Color(98, 140, 255), "Bleu");
 		baseColors.put(new Color(102, 51, 0), "Marron");
+		baseColors.put(new Color(113, 76, 43), "Marron");
 		baseColors.put(new Color(128, 128, 128), "Gris");
 		baseColors.put(new Color(192, 192, 192), "Gris");
 		baseColors.put(new Color(64, 64, 64), "Gris");
+		baseColors.put(new Color(64, 64, 64), "Gris");
+		baseColors.put(new Color(30, 19, 17), "Gris");
 		baseColors.put(new Color(255, 255, 255), "Blanc");
+		baseColors.put(new Color(202, 212, 221), "Blanc");
 		baseColors.put(new Color(0, 0, 0), "Noir");
 		baseColors.put(new Color(2, 11, 12), "Noir");
 		baseColors.put(new Color(7, 18, 19), "Noir");
 		baseColors.put(new Color(255, 200, 0), "Orange");
+		baseColors.put(new Color(220, 74, 1), "Orange");
 		baseColors.put(new Color(234, 142, 119), "Orange");
-		HashMap<String, Integer> colors = getColors(ip.duplicate().convertToRGB());
-		IJ.showMessage(getBeautifulColors(colors, ip.getWidth() * ip.getHeight(), 0.1));
+		getColors(ip.duplicate().convertToRGB());
 	}
 	
 	private String getBeautifulColors(Map<String, Integer> colors, int count, double threshold)
@@ -54,7 +62,7 @@ public class PluginColor_ implements PlugInFilter
 		StringBuilder builder = new StringBuilder();
 		for(String color : colors.keySet())
 			if(colors.get(color) > threshold * count)
-				builder.append(color).append(":").append(String.format("%.2f%%", colors.get(color) / (double) count)).append(", ");
+				builder.append(color).append(":").append(String.format("%.2f%%", 100 * colors.get(color) / (double) count)).append(", ");
 		
 		if(builder.length() > 1)
 			builder.delete(builder.length() - 2, builder.length());
@@ -81,14 +89,22 @@ public class PluginColor_ implements PlugInFilter
 			}
 		}
 		
-		displayImage("Coleurs", ip2);
+		displayImage("Coleurs: " + getBeautifulColors(colors, ip.getWidth() * ip.getHeight(), 0.1), ip2);
 		
 		return colors;
 	}
 	
 	private void displayImage(String title, ImageProcessor imageProcessor)
 	{
-		ImageWindow iw = new ImageWindow(new ImagePlus(WindowManager.makeUniqueName(title), imageProcessor));
+		final ImageWindow iw = new ImageWindow(new ImagePlus(WindowManager.makeUniqueName(title), imageProcessor));
+		iw.addWindowListener(new WindowAdapter(){
+			@Override
+			public void windowClosed(WindowEvent e)
+			{
+				super.windowClosed(e);
+				WindowManager.removeWindow(iw);
+			}
+		});
 		WindowManager.addWindow(iw);
 	}
 	
