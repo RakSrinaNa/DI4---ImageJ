@@ -128,7 +128,7 @@ public class Plugin_ implements PlugInFilter
 		baseColors.put(Color.ORANGE, "Orange");
 		console = new Console();
 		console.setVisible(true);
-		HashMap<Color, Integer> colors = getColors(ip);
+		HashMap<Color, Integer> colors = getColors(ip.duplicate().convertToRGB());
 		IJ.showMessage(getBeautifulColors(colors, ip.getWidth() * ip.getHeight(), 0.1));
 	}
 	
@@ -147,6 +147,7 @@ public class Plugin_ implements PlugInFilter
 	
 	private HashMap<Color, Integer> getColors(ImageProcessor ip)
 	{
+		ip.medianFilter();
 		ImageProcessor ip2 = ip.createProcessor(ip.getWidth(), ip.getHeight());
 		ip.setColorModel(ColorModel.getRGBdefault());
 		HashMap<Color, Integer> colors = new HashMap<Color, Integer>();
@@ -181,8 +182,10 @@ public class Plugin_ implements PlugInFilter
 			double dist = getDistanceHSB(hsb1, hsb2);
 			//double dist = getDistance(c, c2);
 			if(x == 0)
+			{
 				//console.addtext(String.format("x: %d, y: %d, color: %s, testColor: %s, distance: %f", x, y, c.toString(), c2.toString(), dist));
 				console.addtext(String.format("x: %d, y: %d, color: %s, testColor: %s, distance: %f", x, y, Arrays.toString(hsb1), Arrays.toString(hsb2), dist));
+			}
 			if(dist < minDist)
 			{
 				minDist = dist;
