@@ -221,7 +221,7 @@
 			\subsection{Zèbre horizontal}
 				Afin de ne faire apparaitre que les traits horizontaux de l'image zèbre.jpg, nous utilisons le masque de convolution suivant: $\left( \begin{array}{c}1\\0\\-1\end{array}\right)$.
 				
-				En effet, ce filtre le prend en compte que les pixels au dessus et en dessous du pixel courant. Dans le cas ou ceux-ci sont de même couleur, les valeurs après passage dans le masque s'annulent, on voit donc du noir. Si ceux-ci sont différents (bordure horizontale), les valeurs ne s'annulent pas ce qui se traduit pas un pixel blanc.
+				En effet, ce filtre ne prend en compte que les pixels au dessus et en dessous du pixel courant. Dans le cas ou ceux-ci sont de même couleur, les valeurs après passage dans le masque s'annulent, on voit donc du noir. Si ceux-ci sont différents (bordure horizontale), les valeurs ne s'annulent pas, ce qui se traduit pas un pixel blanc.
 				
 				\img{TP2/zebreh.png}{Zèbre horizontal}{1}
 
@@ -251,9 +251,13 @@
 			De manière plus logique, nous pouvons réaliser les étapes suivantes:
 			\begin{easylist}
 				& Fill holes
+				&& Permet de remplir les plus petits trous par la couleur environnante. Cela permet d'éviter les petites incohérences au sein des cellules. 
 				& Watershed
+				&& Technique permettant de séparer les cellules qui étaient confondues / superposées / fusionnées.
 				& Erode
+				&& Réduit chaque cellule. Permet de supprimer les plus petites cellules qui n'en étaient pas en réalité (bruit).
 				& Open
+				&& Réagrandit les cellules.
 				& Erode
 				& Open
 				& Erode
@@ -277,7 +281,12 @@
 		\section{Question 4}
 			\lstinputlisting[caption=MonPlugin\_.java]{../src/main/java/MonPlugin_.java}
 			
+			L'algorithme calcul le niveau de gris moyen de l'image. Plus celui-ci est élevé, plus l'image d'origine était claire, et inversement.
+			
 		\section{Question 5}
 			\lstinputlisting[caption=MonPlugin\_.java]{../src/main/java/FindSimilar_.java}
+			
+		\section{Question 6}
+			Voir le fichier Java \cbo{FindSimilar\_}.
 			
 \end{document}
