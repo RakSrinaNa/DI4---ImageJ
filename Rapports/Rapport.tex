@@ -314,15 +314,15 @@
 			
 			Nous obtenons ainsi à la fin une image où les bordures sont en blanc. Plus ce blanc est intense, plus la bordure est marquée.
 			
-			\lstinputlisting[caption=PluginEdges\_.java]{../src/main/java/PluginKind_.java}
+			\lstinputlisting[caption=PluginKind\_.java]{../src/main/java/PluginKind_.java}
 			
 			Ce plugin permet de définir si une image représente la mer ou le ciel (ou les deux).
 			
 			Pour ce faire, on commence par découper l'image en cases de 50x50 pixels. Puis nous appliquons le traitement suivant sur chaque case :
 			\begin{easylist}
 			& Nous cherche la couleur dominante de la case. S'il ne s'agit pas du Bleu, on s'arrête, la mer ou le ciel étant forcment bleu.
-			& Si c'est le cas, on dessine l'image des contours et, pour chaque pixel de la case, regarde sa valeur. Si la valeur est supérieure à 100 (soit un contour assez marqué), on le compte.
-			& Au final, s'il y a plus de 300 pixels dans la case correspondant au critère précédent, il s'agit d'une case de mer, sinon d'une case de ciel.
+			& Si c'est le cas, on dessine l'image des contours (pixels clairs si un contour est marqué, sombre sinon) et, pour chaque pixel de la case, regarde sa valeur. Si la valeur est supérieure à 100 (soit un contour assez marqué), on le compte.
+			& Au final, s'il y a plus de 400 pixels dans la case correspondants au critère précédent, il s'agit d'une case de mer, sinon d'une case de ciel.
 			\end{easylist}		
 			
 			
