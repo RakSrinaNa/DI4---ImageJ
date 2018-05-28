@@ -21,6 +21,7 @@ public class PluginColor_ implements PlugInFilter
 	
 	public void run(ImageProcessor ip)
 	{
+		//Color mappings
 		baseColors = new HashMap<Color, String>();
 		baseColors.put(new Color(255, 255, 0), "Jaune");
 		
@@ -69,6 +70,7 @@ public class PluginColor_ implements PlugInFilter
 		getColors(ip.duplicate().convertToRGB());
 	}
 	
+	//Write into the output file
 	private String getBeautifulColors(Map<String, Integer> colors, int count, double threshold)
 	{
 		StringBuilder builder = new StringBuilder();
@@ -112,9 +114,12 @@ public class PluginColor_ implements PlugInFilter
 	
 	private HashMap<String, Integer> getColors(ImageProcessor ip)
 	{
+		//Create a second processor, pass it in RGB & apply median filter to make it less sharp
 		ImageProcessor ip2 = ip.createProcessor(ip.getWidth(), ip.getHeight());
 		ip.medianFilter();
 		ip.setColorModel(ColorModel.getRGBdefault());
+		
+		//For each pixel find its closest color in the mappings
 		HashMap<String, Integer> colors = new HashMap<String, Integer>();
 		for(int i = 0; i < ip.getWidth(); i++)
 		{
@@ -129,6 +134,7 @@ public class PluginColor_ implements PlugInFilter
 			}
 		}
 		
+		//Keep only those that represent more than 10% of the pixels
 		displayImage("Coleurs: " + getBeautifulColors(colors, ip.getWidth() * ip.getHeight(), 0.1), ip2);
 		
 		return colors;
@@ -158,6 +164,7 @@ public class PluginColor_ implements PlugInFilter
 		float hsb1[] = new float[3];
 		Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsb1);
 		
+		//Test each color and keep minimum distance
 		for(Color c2 : baseColors.keySet())
 		{
 			float hsb2[] = new float[3];
@@ -173,6 +180,7 @@ public class PluginColor_ implements PlugInFilter
 		return bestColor;
 	}
 	
+	//Get the distance in the HSB space where H is less powerful than the two others
 	private double getDistanceHSB(float[] hsb1, float[] hsb2)
 	{
 		return 0.24 * Math.sqrt(Math.pow(hsb1[0] - hsb2[0], 2)) + 0.38 * Math.sqrt(Math.pow(hsb1[1] - hsb2[1], 2)) + 0.38 * Math.sqrt(Math.pow(hsb1[2] - hsb2[2], 2));

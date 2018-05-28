@@ -25,6 +25,7 @@ public class PluginQuality_ implements PlugInFilter
 	
 	private String getBlurrNess(ImageProcessor ip)
 	{
+		//To get the blurrness we apply a LoG
 		ImagePlus imagePlus = new ImagePlus("TESTT", ip);
 		ImageConverter imageConverter = new ImageConverter(imagePlus);
 		imageConverter.convertToGray8();
@@ -125,18 +126,21 @@ public class PluginQuality_ implements PlugInFilter
 		                                     }, 9, 9);
 		//imageProcessor.convolve3x3(new int[]{0, 1, 0, 1, -4, 1, 0, 1, 0});
 		
+		//We get the average value
 		long average = 0;
 		for(int i = 0; i < ip.getWidth(); i++)
 			for(int j = 0; j < ip.getHeight(); j++)
 				average += ip.getPixelValue(i, j);
 		average /= ip.getWidth() * ip.getHeight();
 		
+		//Get the variance
 		long variance = 0;
 		for(int i = 0; i < ip.getWidth(); i++)
 			for(int j = 0; j < ip.getHeight(); j++)
 				variance += Math.pow(ip.getPixelValue(i, j) - average, 2);
 		variance /= ip.getWidth() * ip.getHeight();
 		
+		//If the variance is high, we assume the image is blurred
 		String valTxt = variance < 3000 ? "Net" : "Flou";
 		displayImage("Log: " + valTxt + "(" + variance + ")", imageProcessor);
 		return valTxt;
@@ -171,11 +175,14 @@ public class PluginQuality_ implements PlugInFilter
 	
 	private String getIntensity(ImageProcessor ip)
 	{
+		//Convert to RGB
 		ip = ip.convertToRGB();
 		ImageProcessor ip2 = ip.createProcessor(ip.getWidth(), ip.getHeight());
 		ip.medianFilter();
 		ip.setColorModel(ColorModel.getRGBdefault());
 		HashMap<String, Double> colors = new HashMap<String, Double>();
+		
+		//For each pixel, get if it's dark or light or medium.
 		for(int i = 0; i < ip.getWidth(); i++)
 		{
 			for(int j = 0; j < ip.getHeight(); j++)
@@ -184,6 +191,7 @@ public class PluginQuality_ implements PlugInFilter
 				float hsb1[] = new float[3];
 				Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsb1);
 				
+				//If the B in HSB is < 0.33 dar, > 0.66 light, otherwise medium
 				String colorName = hsb1[2] < 0.33 ? "Sombre" : (hsb1[2] > 0.66 ? "Clair" : "Normal");
 				if(!colors.containsKey(colorName))
 					colors.put(colorName, 0D);
@@ -192,6 +200,7 @@ public class PluginQuality_ implements PlugInFilter
 			}
 		}
 		
+		//Get the relative percentage. For example if the image is half light and half dark, both should npw represent 100%.
 		String maxKey = null;
 		double max = 0;
 		for(String key : colors.keySet())

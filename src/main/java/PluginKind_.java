@@ -19,6 +19,7 @@ public class PluginKind_ implements PlugInFilter
 	private static HashMap<Color, String> baseColors;
 	private ImagePlus imp;
 	
+	//For the colors see the PluginColor_, this is the same
 	public void run(ImageProcessor ip)
 	{
 		baseColors = new HashMap<Color, String>();
@@ -77,15 +78,18 @@ public class PluginKind_ implements PlugInFilter
 		// int sizeX = (int) Math.ceil(imageProcessor.getWidth() / (double)cellsX);
 		// int sizeY = (int) Math.ceil(imageProcessor.getHeight() / (double)cellsY);
 		
+		//Create a region of 50x50px that will scan the image
 		int sizeX = 50;
 		int sizeY = 50;
 		int cellsX = (int) Math.ceil(imageProcessor.getWidth() / (double) sizeX);
 		int cellsY = (int) Math.ceil(imageProcessor.getHeight() / (double) sizeY);
 		
+		//For the colors
 		ImageProcessor ip2 = imageProcessor.duplicate();
 		ip2.medianFilter();
 		ip2.setColorModel(ColorModel.getRGBdefault());
 		
+		//To find edges, pass in gray scale and find edges
 		ImagePlus imagePlus = new ImagePlus("TESTT", imageProcessor);
 		ImageConverter imageConverter = new ImageConverter(imagePlus);
 		imageConverter.convertToGray8();
@@ -93,24 +97,31 @@ public class PluginKind_ implements PlugInFilter
 		ip3.findEdges();
 		ip3.setBinaryThreshold();
 		
+		//Output image
 		ImageProcessor ip4 = ip2.duplicate();
 		for(int i = 0; i < cellsX; i++)
 			ip4.drawRect(i * sizeX, 0, 2, imageProcessor.getHeight());
 		for(int i = 0; i < cellsY; i++)
 			ip4.drawRect(0, i * sizeY, imageProcessor.getWidth(), 2);
 		
+		//Cout region of each kind, -1 is sky, 1 is sea
 		HashMap<Integer, Double> counts = new HashMap<Integer, Double>();
 		counts.put(-1, 0D);
 		counts.put(1, 0D);
 		
+		//For each region
 		for(int i = 0; i < cellsX; i++)
 		{
 			for(int j = 0; j < cellsY; j++)
 			{
-				int val = processPart(ip2, ip3, i * sizeX, Math.min((i + 1) * sizeX, imageProcessor.getWidth()), j * sizeY, Math.min((j + 1) * sizeY, imageProcessor.getHeight()));
-				ip4.drawString(String.format("%s", val == 0 ? "Rien" : (val == -1 ? "Ciel" : "Mer")), (int) ((i + 0.1) * sizeX), (int) ((j + 0.5) * sizeY));
-				if(val != 0)
-					counts.put(val, counts.get(val) + 1);
+				//Get what is inside, -1 sky, 1 sea, 0 it wasn't blue
+				float val = processPart(ip2, ip3, i * sizeX, Math.min((i + 1) * sizeX, imageProcessor.getWidth()), j * sizeY, Math.min((j + 1) * sizeY, imageProcessor.getHeight()));
+				
+				//If the edges are more than "400", then there's a lot of them and we assume it's the sea
+				int index = val == 0f ? 0 : (val >= 400 ? 1 : -1);
+				ip4.drawString(String.format("%s\n%.0f", index == 0 ? "Rien" : (index == -1 ? "Ciel" : "Mer"), val), (int) ((i + 0.1) * sizeX), (int) ((j + 0.5) * sizeY));
+				if(index != 0)
+					counts.put(index, counts.get(index) + 1);
 			}
 		}
 		double tot = counts.get(-1) + counts.get(1);
@@ -121,8 +132,9 @@ public class PluginKind_ implements PlugInFilter
 		return (counts.get(-1) >= 30 ? "Ciel " : "") + (counts.get(1) >= 30 ? "Mer" : "");
 	}
 	
-	private int processPart(ImageProcessor imageProcessor, ImageProcessor imageEdges, int startX, int endX, int startY, int endY)
+	private float processPart(ImageProcessor imageProcessor, ImageProcessor imageEdges, int startX, int endX, int startY, int endY)
 	{
+		//For each pixels in the region, get the closest color
 		HashMap<String, Integer> colors = new HashMap<String, Integer>();
 		for(int i = startX; i < endX; i++)
 		{
@@ -136,6 +148,7 @@ public class PluginKind_ implements PlugInFilter
 			}
 		}
 		
+		//If the most present color is blue, we continue the process
 		int maxCol = -1;
 		String col = "";
 		for(String color : colors.keySet())
@@ -146,8 +159,9 @@ public class PluginKind_ implements PlugInFilter
 			}
 		
 		if(!col.equals("Bleu"))
-			return 0;
+			return 0f;
 		
+		//Count the "quantity" of edges
 		float total = 0;
 		for(int i = startX; i < endX; i++)
 		{
@@ -155,9 +169,10 @@ public class PluginKind_ implements PlugInFilter
 				total += imageEdges.getPixelValue(i, j) >= 100 ? 1 : 0;
 		}
 		
-		return total >= 750 ? 1 : -1;
+		return total;
 	}
 	
+	//For the colors see the PluginColor_, this is the same
 	private Color getClosestColor(int i)
 	{
 		double minDist = Double.MAX_VALUE;
@@ -182,6 +197,7 @@ public class PluginKind_ implements PlugInFilter
 		return bestColor;
 	}
 	
+	//For the colors see the PluginColor_, this is the same
 	private double getDistanceHSB(float[] hsb1, float[] hsb2)
 	{
 		return 0.24 * Math.sqrt(Math.pow(hsb1[0] - hsb2[0], 2)) + 0.38 * Math.sqrt(Math.pow(hsb1[1] - hsb2[1], 2)) + 0.38 * Math.sqrt(Math.pow(hsb1[2] - hsb2[2], 2));

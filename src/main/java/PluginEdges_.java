@@ -22,6 +22,8 @@ public class PluginEdges_ implements PlugInFilter
 	{
 		ip.smooth();
 		ImageProcessor ip2 = ip.duplicate();
+		
+		//Apply 2 convolution filters for vertical and horizontal edges
 		Convolver cv = new Convolver();
 		cv.convolve(ip, new float[]{
 				-1, 0, 1,
