@@ -292,15 +292,22 @@
 		\section{Question 7}
 			\lstinputlisting[caption=PluginColor\_.java]{../src/main/java/PluginColor_.java}
 			
-			Afin de récupérer les couleurs dominantes, nous parcourons chaque pixels. Nous comparons ces derniers à des couleurs de référence. Cette comparaison est basée sur le calcul d'une distance dans l'espace HSB, puis nous gardons la plus petite, qui correspond à la couleur la plus proche.
+			Afin de récupérer les couleurs dominantes, nous parcourons chaque pixel. Nous comparons ces derniers à des couleurs de référence. Cette comparaison est basée sur le calcul d'une distance dans l'espace HSB, puis nous gardons la plus petite, qui correspond à la couleur la plus proche.
 			
-			Ces résultats de comparaison sont stockées dans un tableau qui, pour chaque couleur de référence, compte le nombre de pixels associés. Nous considérons ensuite que les couleurs présentes sur plus de 10\% des des pixels de l'image sont notables. Nous les écrivons donc dans le fichier de sortie.
+			Ces résultats de comparaison sont stockées dans un tableau qui, pour chaque couleur de référence, compte le nombre de pixels associés. Nous considérons ensuite que les couleurs présentes sur plus de 10\% des pixels de l'image sont notables. Nous les écrivons donc dans le fichier de sortie.
 			
-			Afin d'assurer d'être le plus précis possible, nous avons enregistré des nuances pour chaque couleur. Par exemple le bleu pur RGB (0, 0, 255) est extrêmement foncé et fluo. Ainsi les bleus plus doux comme le ciel ou la mer ne sont donc pas reconnus comme bleu mais plutôt comme une couleur clair, gris ou blanc.
+			Afin d'assurer d'être le plus précis possible, nous avons enregistré des nuances pour chaque couleur. Par exemple le bleu pur RGB (0, 0, 255) est extrêmement foncé et fluo. Ainsi les bleus plus doux comme le ciel ou la mer ne sont pas reconnus comme bleu mais plutôt comme une couleur clair, gris ou blanc. L'ajout de ces nuances permet d'associer de manière précise chaque pixel à sa couleur de réfénrence la plus proche.
 			
 			\lstinputlisting[caption=PluginQuality\_.java]{../src/main/java/PluginQuality_.java}
 			
+			Ce plugin permet de calculer la netteté de l'image, ainsi que sa luminosité.
+			
+			Pour la netteté, nous commençons par transformer l'image en nuances de gris 8bits. Puis nous calculons sa moyenne de niveau de gris. Enfin, nous calculons la somme des carrés des écarts à la moyenne pour chaque pixel (variance). Si ce résultat est inférieur à 3000, nous cnsiderons cette image nette, sinon, floue. 
+			
+			Pour la luminosité, nous comptons le nombre de pixel Clair, Sombre ou Moyen grâce à la valeur Brightness (dans le model HSB). Si cette valeur est inférieure à 1 tier, le pixel est considéré sombre, supérieure à 2 tiers, clair, et entre les deux, moyen. La catégorie regroupant le plus de pixels de l'image sera celle écrite dans le fichier de sortie.
+			
 			\lstinputlisting[caption=PluginEdges\_.java]{../src/main/java/PluginEdges_.java}
+			
 			Ce plugin permet de faire une détection de contour grace à des masques de convolutions.
 			
 			Un premier permet de détecter les bordures verticales, tandis qu'un deuxième les bordures horizontales. Par la suite nous combinons ces résultats avec une distance euclidienne.
