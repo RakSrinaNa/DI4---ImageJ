@@ -3,6 +3,7 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
 import ij.plugin.filter.PlugInFilter;
+import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -12,9 +13,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.Map;
 
-public class PluginColor_ implements PlugInFilter
+public class PluginKind_ implements PlugInFilter
 {
 	private static HashMap<Color, String> baseColors;
 	
@@ -65,90 +65,94 @@ public class PluginColor_ implements PlugInFilter
 		baseColors.put(new Color(255, 200, 0), "Orange");
 		baseColors.put(new Color(220, 74, 1), "Orange");
 		baseColors.put(new Color(234, 142, 119), "Orange");
-		getColors(ip.duplicate().convertToRGB());
+		
+		printOut(getKind(ip.duplicate()));
 	}
 	
-	private String getBeautifulColors(Map<String, Integer> colors, int count, double threshold)
+	private String getKind(ImageProcessor imageProcessor)
 	{
-		StringBuilder builder = new StringBuilder();
-		for(String color : colors.keySet())
-			if(colors.get(color) > threshold * count)
-				builder.append(color).append(":").append(String.format("%.2f%%", 100 * colors.get(color) / (double) count)).append(", ");
+		double cells = 10.D;
+		int sizeX = (int) Math.ceil(imageProcessor.getWidth() / cells);
+		int sizeY = (int) Math.ceil(imageProcessor.getHeight() / cells);
 		
-		if(builder.length() > 1)
-			builder.delete(builder.length() - 2, builder.length());
+		ImageProcessor ip2 = imageProcessor.duplicate();
+		ip2.medianFilter();
+		ip2.setColorModel(ColorModel.getRGBdefault());
 		
-		File outFile = new File(WindowManager.getActiveWindow().getName() + "_tag" + ".txt");
-		PrintWriter pw = null;
-		try
+		ImagePlus imagePlus = new ImagePlus("TESTT", imageProcessor);
+		ImageConverter imageConverter = new ImageConverter(imagePlus);
+		imageConverter.convertToGray8();
+		ImageProcessor ip3 = imagePlus.getProcessor().convertToFloatProcessor();
+		ip3.findEdges();
+		ip3.setBinaryThreshold();
+		
+		ImageProcessor ip4 = ip2.duplicate();
+		for(int i = 0; i < cells; i++)
 		{
-			pw = new PrintWriter(new FileOutputStream(outFile));
-			try
+			ip4.drawRect(i * sizeX, 0, 2, imageProcessor.getHeight());
+			ip4.drawRect(0, i * sizeY, imageProcessor.getWidth(), 2);
+		}
+		
+		HashMap<Integer, Double> counts = new HashMap<Integer, Double>();
+		counts.put(-1, 0D);
+		counts.put(1, 0D);
+		
+		for(int i = 0; i < cells; i++)
+		{
+			for(int j = 0; j < cells; j++)
 			{
-				pw.print("Quality: ");
-				for(String color : colors.keySet())
-					if(colors.get(color) > threshold)
-						builder.append(color).append(" ");
-				pw.println();
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
+				int val = processPart(ip2, ip3, i * sizeX, Math.min((i + 1) * sizeX, imageProcessor.getWidth()), j * sizeY, Math.min((j + 1) * sizeY, imageProcessor.getHeight()));
+				ip4.drawString(String.format("%s", val == 0 ? "Rien" : (val == -1 ? "Ciel" : "Mer")), (int)((i + 0.1) * sizeX), (int)((j + 0.5) * sizeY));
+				if(val != 0)
+					counts.put(val, counts.get(val) + 1);
 			}
 		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			if(pw != null)
-				pw.close();
-		}
+		double tot = counts.get(-1) + counts.get(1);
+		counts.put(-1, 100 * counts.get(-1) / tot);
+		counts.put(1, 100 * counts.get(1) / tot);
+		displayImage(String.format("Parts: Ciel=%.2f%% %s/Mer=%.2f%% %s", counts.get(-1), counts.get(-1) >= 30 ? "OK" : "NON", counts.get(1), counts.get(1) >= 30 ? "OK" : "NON"), ip4);
 		
-		return builder.toString();
+		return (counts.get(-1) >= 30 ? "Ciel " : "") + (counts.get(1) >= 30 ? "Mer" : "");
 	}
 	
-	private HashMap<String, Integer> getColors(ImageProcessor ip)
+	private int processPart(ImageProcessor imageProcessor, ImageProcessor imageEdges, int startX, int endX, int startY, int endY)
 	{
-		ImageProcessor ip2 = ip.createProcessor(ip.getWidth(), ip.getHeight());
-		ip.medianFilter();
-		ip.setColorModel(ColorModel.getRGBdefault());
 		HashMap<String, Integer> colors = new HashMap<String, Integer>();
-		for(int i = 0; i < ip.getWidth(); i++)
+		for(int i = startX; i < endX; i++)
 		{
-			for(int j = 0; j < ip.getHeight(); j++)
+			for(int j = startY; j < endY; j++)
 			{
-				Color c = getClosestColor(i, j, ip.getColorModel().getRGB(ip.getPixel(i, j)));
+				Color c = getClosestColor(imageProcessor.getColorModel().getRGB(imageProcessor.getPixel(i, j)));
 				String colorName = baseColors.get(c);
 				if(!colors.containsKey(colorName))
 					colors.put(colorName, 0);
 				colors.put(colorName, colors.get(colorName) + 1);
-				ip2.putPixel(i, j, c.getRGB());
 			}
 		}
 		
-		displayImage("Coleurs: " + getBeautifulColors(colors, ip.getWidth() * ip.getHeight(), 0.1), ip2);
-		
-		return colors;
-	}
-	
-	private void displayImage(String title, ImageProcessor imageProcessor)
-	{
-		final ImageWindow iw = new ImageWindow(new ImagePlus(WindowManager.makeUniqueName(title), imageProcessor));
-		iw.addWindowListener(new WindowAdapter(){
-			@Override
-			public void windowClosed(WindowEvent e)
+		int maxCol = -1;
+		String col = "";
+		for(String color : colors.keySet())
+			if(colors.get(color) > maxCol)
 			{
-				super.windowClosed(e);
-				WindowManager.removeWindow(iw);
+				maxCol = colors.get(color);
+				col = color;
 			}
-		});
-		WindowManager.addWindow(iw);
+		
+		if(!col.equals("Bleu"))
+			return 0;
+		
+		float total = 0;
+		for(int i = startX; i < endX; i++)
+		{
+			for(int j = startY; j < endY; j++)
+				total += imageEdges.getPixelValue(i, j) >= 100 ? 1 : 0;
+		}
+		
+		return total >= 300 ? 1 : -1;
 	}
 	
-	
-	private Color getClosestColor(int x, int y, int i)
+	private Color getClosestColor(int i)
 	{
 		double minDist = Double.MAX_VALUE;
 		Color bestColor = null;
@@ -175,6 +179,48 @@ public class PluginColor_ implements PlugInFilter
 	private double getDistanceHSB(float[] hsb1, float[] hsb2)
 	{
 		return 0.24 * Math.sqrt(Math.pow(hsb1[0] - hsb2[0], 2)) + 0.38 * Math.sqrt(Math.pow(hsb1[1] - hsb2[1], 2)) + 0.38 * Math.sqrt(Math.pow(hsb1[2] - hsb2[2], 2));
+	}
+	
+	private void printOut(String kind)
+	{
+		File outFile = new File(WindowManager.getActiveWindow().getName() + "_tag" + ".txt");
+		PrintWriter pw = null;
+		try
+		{
+			pw = new PrintWriter(new FileOutputStream(outFile));
+			try
+			{
+				pw.println("Type: " + kind);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			if(pw != null)
+				pw.close();
+		}
+	}
+	
+	private void displayImage(String title, ImageProcessor imageProcessor)
+	{
+		final ImageWindow iw = new ImageWindow(new ImagePlus(WindowManager.makeUniqueName(title), imageProcessor));
+		iw.addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowClosed(WindowEvent e)
+			{
+				super.windowClosed(e);
+				WindowManager.removeWindow(iw);
+			}
+		});
+		WindowManager.addWindow(iw);
 	}
 	
 	public int setup(String arg, ImagePlus imp)

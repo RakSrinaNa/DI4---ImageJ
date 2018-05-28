@@ -61,6 +61,6 @@ public class PluginEdges_ implements PlugInFilter
 			IJ.showMessage("Traitement de l'image v2");
 			return DONE;
 		}
-		return DOES_RGB + DOES_8G + DOES_16 + DOES_32;
+		return DOES_ALL;
 	}
 }
