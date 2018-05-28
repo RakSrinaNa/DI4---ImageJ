@@ -17,6 +17,7 @@ import java.util.HashMap;
 public class PluginKind_ implements PlugInFilter
 {
 	private static HashMap<Color, String> baseColors;
+	private ImagePlus imp;
 	
 	public void run(ImageProcessor ip)
 	{
@@ -71,9 +72,15 @@ public class PluginKind_ implements PlugInFilter
 	
 	private String getKind(ImageProcessor imageProcessor)
 	{
-		double cells = 10.D;
-		int sizeX = (int) Math.ceil(imageProcessor.getWidth() / cells);
-		int sizeY = (int) Math.ceil(imageProcessor.getHeight() / cells);
+		// int cellsX = 10.D;
+		// int cellsY = 10.D;
+		// int sizeX = (int) Math.ceil(imageProcessor.getWidth() / (double)cellsX);
+		// int sizeY = (int) Math.ceil(imageProcessor.getHeight() / (double)cellsY);
+		
+		int sizeX = 50;
+		int sizeY = 50;
+		int cellsX = (int) Math.ceil(imageProcessor.getWidth() / (double) sizeX);
+		int cellsY = (int) Math.ceil(imageProcessor.getHeight() / (double) sizeY);
 		
 		ImageProcessor ip2 = imageProcessor.duplicate();
 		ip2.medianFilter();
@@ -87,22 +94,21 @@ public class PluginKind_ implements PlugInFilter
 		ip3.setBinaryThreshold();
 		
 		ImageProcessor ip4 = ip2.duplicate();
-		for(int i = 0; i < cells; i++)
-		{
+		for(int i = 0; i < cellsX; i++)
 			ip4.drawRect(i * sizeX, 0, 2, imageProcessor.getHeight());
+		for(int i = 0; i < cellsY; i++)
 			ip4.drawRect(0, i * sizeY, imageProcessor.getWidth(), 2);
-		}
 		
 		HashMap<Integer, Double> counts = new HashMap<Integer, Double>();
 		counts.put(-1, 0D);
 		counts.put(1, 0D);
 		
-		for(int i = 0; i < cells; i++)
+		for(int i = 0; i < cellsX; i++)
 		{
-			for(int j = 0; j < cells; j++)
+			for(int j = 0; j < cellsY; j++)
 			{
 				int val = processPart(ip2, ip3, i * sizeX, Math.min((i + 1) * sizeX, imageProcessor.getWidth()), j * sizeY, Math.min((j + 1) * sizeY, imageProcessor.getHeight()));
-				ip4.drawString(String.format("%s", val == 0 ? "Rien" : (val == -1 ? "Ciel" : "Mer")), (int)((i + 0.1) * sizeX), (int)((j + 0.5) * sizeY));
+				ip4.drawString(String.format("%s", val == 0 ? "Rien" : (val == -1 ? "Ciel" : "Mer")), (int) ((i + 0.1) * sizeX), (int) ((j + 0.5) * sizeY));
 				if(val != 0)
 					counts.put(val, counts.get(val) + 1);
 			}
@@ -149,7 +155,7 @@ public class PluginKind_ implements PlugInFilter
 				total += imageEdges.getPixelValue(i, j) >= 100 ? 1 : 0;
 		}
 		
-		return total >= 300 ? 1 : -1;
+		return total >= 750 ? 1 : -1;
 	}
 	
 	private Color getClosestColor(int i)
@@ -183,7 +189,7 @@ public class PluginKind_ implements PlugInFilter
 	
 	private void printOut(String kind)
 	{
-		File outFile = new File(WindowManager.getActiveWindow().getName() + "_tag" + ".txt");
+		File outFile = new File(IJ.getDirectory("current"), imp.getTitle() + "_tag" + ".txt");
 		PrintWriter pw = null;
 		try
 		{
@@ -225,6 +231,7 @@ public class PluginKind_ implements PlugInFilter
 	
 	public int setup(String arg, ImagePlus imp)
 	{
+		this.imp = imp;
 		if(arg.equals("about"))
 		{
 			IJ.showMessage("Traitement de l'image v2");

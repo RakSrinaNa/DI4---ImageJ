@@ -16,6 +16,8 @@ import java.util.HashMap;
 
 public class PluginQuality_ implements PlugInFilter
 {
+	private ImagePlus imp;
+	
 	public void run(ImageProcessor ip)
 	{
 		printOut(getIntensity(ip.duplicate()), getBlurrNess(ip.duplicate()));
@@ -142,7 +144,7 @@ public class PluginQuality_ implements PlugInFilter
 	
 	private void printOut(String intensity, String blurrness)
 	{
-		File outFile = new File(WindowManager.getActiveWindow().getName() + "_tag" + ".txt");
+		File outFile = new File(IJ.getDirectory("current"), imp.getTitle() + "_tag" + ".txt");
 		PrintWriter pw = null;
 		try
 		{
@@ -220,6 +222,7 @@ public class PluginQuality_ implements PlugInFilter
 	
 	public int setup(String arg, ImagePlus imp)
 	{
+		this.imp = imp;
 		if(arg.equals("about"))
 		{
 			IJ.showMessage("Traitement de l'image v2");

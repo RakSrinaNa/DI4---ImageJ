@@ -17,6 +17,7 @@ import java.util.Map;
 public class PluginColor_ implements PlugInFilter
 {
 	private static HashMap<Color, String> baseColors;
+	private ImagePlus imp;
 	
 	public void run(ImageProcessor ip)
 	{
@@ -78,7 +79,7 @@ public class PluginColor_ implements PlugInFilter
 		if(builder.length() > 1)
 			builder.delete(builder.length() - 2, builder.length());
 		
-		File outFile = new File(WindowManager.getActiveWindow().getName() + "_tag" + ".txt");
+		File outFile = new File(IJ.getDirectory("current"), imp.getTitle() + "_tag" + ".txt");
 		PrintWriter pw = null;
 		try
 		{
@@ -179,6 +180,7 @@ public class PluginColor_ implements PlugInFilter
 	
 	public int setup(String arg, ImagePlus imp)
 	{
+		this.imp = imp;
 		if(arg.equals("about"))
 		{
 			IJ.showMessage("Traitement de l'image v2");
